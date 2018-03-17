@@ -15,7 +15,6 @@ filetype plugin indent on
 set autoread
 
 " With a map leader it's possible to do extra key combinations
-let mapleader = ";"
 let g:mapleader = ";"
 
 " :W sudo saves the file
@@ -29,7 +28,7 @@ execute pathogen#infect()
 map <C-n> :NERDTreeToggle<CR>
 
 " Clipboard
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 
 
@@ -288,6 +287,12 @@ map <leader>n :e ~/buffer<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
+" Multicursor mode (vim-multiple-cursors)
+let g:multi_cursor_use_default_mapping=0
+let g:multi_cursor_next_key='<C-d>'
+let g:multi_cursor_prev_key='<C-p>'
+let g:multi_cursor_skip_key='<C-x>'
+let g:multi_cursor_quit_key='<Esc>'
 
 " }}}
 " Helper functions {{{
@@ -370,7 +375,7 @@ augroup configgroup
   autocmd!
   autocmd VimEnter * highlight clear SignColumn
   autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md :call CleanExtraSpaces()
-	
+
 	" Java
   autocmd FileType java setlocal noexpandtab
   autocmd FileType java setlocal list
