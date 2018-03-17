@@ -2,38 +2,56 @@
 
 " General {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Use modelines
 set modelines=1
 
 " Sets how many lines of history VIM has to remember
-set history=500
+set history=1500
 
 " Enable filetype plugins
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
 
 " With a map leader it's possible to do extra key combinations
-let mapleader = "\\"
-let g:mapleader = "\\"
-
-" Fast saving
-nmap <leader>w :w!<cr>
+let mapleader = ";"
+let g:mapleader = ";"
 
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
-command W w !sudo tee % > /dev/null
+command! W w !sudo tee % > /dev/null
 
 " Pathogen plugin loading
 execute pathogen#infect()
+
+" Open NERDTree
+map <C-n> :NERDTreeToggle<CR>
+
+" Clipboard
+set clipboard=unnamed
+
 
 
 " }}}
 " VIM user interface {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Different cursors for different modes
+if empty($TMUX)
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+  let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+else
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+  let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
+endif
+
+" Lower the updatetime (mostly for git stuff)
+set updatetime=100
+
+set ttyfast
+
 " Enable confirm dialogs
 set confirm
 
@@ -52,7 +70,7 @@ nnoremap <space> za
 
 " Show extra lines vertically and horizontally
 set scrolloff=5
-set sidescrolloff=10
+set sidescroll=10
 
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en'
@@ -100,6 +118,30 @@ endif
 
 " Add a bit extra margin to the left
 set foldcolumn=1
+
+" Open NERDtree if opening a folder
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Close NERDTree when you open a file
+let NERDTreeQuitOnOpen = 1
+
+" Close vim tab if NERDtree is the only window opened
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+" NERDTree Git Icons
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
 
 " }}}
 " Colors and Fonts {{{
@@ -186,6 +228,15 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " }}}
 " Moving around, tabs, windows and buffers {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable mouse
+set mouse=a
+
+" Show tabline
+set showtabline=1
+
+" Split direction for windows:
+set splitbelow
+set splitright
 
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
@@ -215,6 +266,8 @@ endtry
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" Delete file buffer of file deleted via NERDTree
+let NERDTreeAutoDeleteBuffer = 1
 
 " }}}
 " Spell checking {{{
@@ -223,11 +276,7 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Pressing ,ss will toggle and untoggle spell checking
 map <leader>ss :setlocal spell!<cr>
 
-" Shortcuts using <leader>
-map <leader>sn ]s
-map <leader>sp [s
-map <leader>sa zg
-map <leader>s? z=
+set spelllang=en,es,fr
 
 " }}}
 " Misc {{{
