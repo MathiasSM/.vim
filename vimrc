@@ -2,6 +2,9 @@
 
 " General {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Not Vi
+set nocompatible
+
 " Use modelines
 set modelines=1
 
@@ -14,22 +17,14 @@ filetype plugin indent on
 " Set to auto read when a file is changed from the outside
 set autoread
 
-" With a map leader it's possible to do extra key combinations
-let g:mapleader = ";"
-
-" :W sudo saves the file
-" (useful for handling the permission-denied error)
+" :W sudo saves the file (useful for handling the permission-denied error)
 command! W w !sudo tee % > /dev/null
 
-" Pathogen plugin loading
-execute pathogen#infect()
-
 " Open NERDTree
-map <C-n> :NERDTreeToggle<CR>
+map <leader>n :NERDTreeToggle<CR>
 
-" Clipboard
-set clipboard=unnamedplus
-
+" Clipboard-able
+set clipboard=unnamed
 
 
 " }}}
@@ -47,7 +42,7 @@ else
 endif
 
 " Lower the updatetime (mostly for git stuff)
-set updatetime=100
+set updatetime=1000
 
 set ttyfast
 
@@ -65,19 +60,12 @@ set cursorline
 set foldenable
 set foldmethod=indent
 set foldlevel=9999
-nnoremap <space> za
 
 " Show extra lines vertically and horizontally
 set scrolloff=5
 set sidescroll=10
 
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en'
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
-
-" Turn on the WiLd menu
+" Turn on the 'wild' menu
 set wildmenu
 
 " Ignore compiled files
@@ -100,9 +88,6 @@ set incsearch
 " Don't redraw while executing macros (good performance config)
 set lazyredraw
 
-" For regular expressions turn magic on
-set magic
-
 " Show matching brackets when text indicator is over them
 set showmatch
 
@@ -115,30 +100,26 @@ if has("gui_macvim")
   autocmd GUIEnter * set vb t_vb=
 endif
 
-" Add a bit extra margin to the left
-set foldcolumn=1
-
 " Open NERDtree if opening a folder
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
-" Close NERDTree when you open a file
-let NERDTreeQuitOnOpen = 1
 
-" Close vim tab if NERDtree is the only window opened
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
-
-" NERDTree Git Icons
+let g:NERDTreeShowHidden=1
+let g:NERDTreeSortOrder = ['\/$'] " Directories first
+let g:NERDTreeNaturalSort = 1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeCascadeOpenSingleChildDir = 1
+let g:NERDTreeCaseSensitiveSort = 1
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "✹",
-    \ "Staged"    : "✚",
-    \ "Untracked" : "✭",
-    \ "Renamed"   : "➜",
-    \ "Unmerged"  : "═",
-    \ "Deleted"   : "✖",
-    \ "Dirty"     : "✗",
-    \ "Clean"     : "✔︎",
-    \ 'Ignored'   : '☒',
+    \ "Modified"  : "x",
+    \ "Staged"    : "+",
+    \ "Untracked" : "*",
+    \ "Renamed"   : ">",
+    \ "Unmerged"  : "=",
+    \ "Deleted"   : "-",
+    \ "Dirty"     : "x",
+    \ "Clean"     : "O",
     \ "Unknown"   : "?"
     \ }
 
@@ -150,16 +131,19 @@ let g:NERDTreeIndicatorMapCustom = {
 syntax enable
 
 " Enable 256 colors palette in Gnome Terminal
+set termguicolors
 if $COLORTERM == 'gnome-terminal'
   set t_Co=256
 endif
 
-try
-  colorscheme Tomorrow-Night
-catch
-endtry
-
 set background=dark
+try
+  colorscheme onedark
+  let g:airline_theme='dracula'
+catch
+  highlight Normal ctermbg=black
+  colorscheme dracula
+endtry
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -183,11 +167,8 @@ set ffs=unix,dos,mac
 " Always show the status line
 set laststatus=2
 
-" Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
-
-
-
+let g:airline#extensions#tabline#formatter = 'jsformatter'
+let g:airline_theme='tomorrow'
 
 " }}}
 " Text, tab and indent related {{{
@@ -213,6 +194,9 @@ set wrap
 set autoindent
 set smartindent
 
+" Select paragraphs when indented
+vnoremap < <gv
+vnoremap > >gv
 
 " }}}
 " Visual mode related {{{
@@ -247,20 +231,31 @@ map <C-h> <C-W>h
 map <C-l> <C-W>l
 
 " Move by visual line
-" noremap  <buffer> <silent> k gk
-" noremap  <buffer> <silent> j gj
-" noremap  <buffer> <silent> 0 g0
-" noremap  <buffer> <silent> $ g$
+noremap  <buffer> <silent> <up> gk
+noremap  <buffer> <silent> <down> gj
+noremap  <buffer> <silent> k gk
+noremap  <buffer> <silent> j gj
+
+" Mappings to access buffers
+" \l       : list buffers
+" \b \f \g : go back/forward/last-used
+" \1 \2 \3 : go to buffer 1/2/3 etc
+nnoremap <Leader>l :ls<CR>
+nnoremap <Leader>b :bp<CR>
+nnoremap <Leader>f :bn<CR>
+nnoremap <Leader>g :e#<CR>
+nnoremap <Leader>1 :1b<CR>
+nnoremap <Leader>2 :2b<CR>
+nnoremap <Leader>3 :3b<CR>
+nnoremap <Leader>4 :4b<CR>
+nnoremap <Leader>5 :5b<CR>
+nnoremap <Leader>6 :6b<CR>
+nnoremap <Leader>7 :7b<CR>
+nnoremap <Leader>8 :8b<CR>
+nnoremap <Leader>9 :9b<CR>
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" Specify the behavior when switching between buffers
-try
-  set switchbuf=useopen,usetab,newtab
-  set stal=2
-catch
-endtry
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -268,8 +263,14 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Delete file buffer of file deleted via NERDTree
 let NERDTreeAutoDeleteBuffer = 1
 
+let NERDTreeMouseMode = 2 " Single click on directory to open
+let NERDTreeChDirMode = 2 " Change the CWD with the tree root
+let NERDTreeHijackNetrw = 1
+
+
+
 " }}}
-" Spell checking {{{
+" Linting and Spell checking {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Pressing ,ss will toggle and untoggle spell checking
@@ -277,12 +278,16 @@ map <leader>ss :setlocal spell!<cr>
 
 set spelllang=en,es,fr
 
+
+let g:airline#extensions#ale#enabled=1
+
+let g:ale_fixers={
+\   'javascript': ['eslint'],
+\}
+
 " }}}
 " Misc {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Quickly open a new buffer for scribble
-map <leader>n :e ~/buffer<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
