@@ -1,0 +1,108 @@
+[submodule "bundle/ale"]
+	url = "https://github.com/w0rp/ale.git"
+	path = pack/mathias/start/pack-ale-linters
+[submodule "bundle/vim-gitgutter"]
+	url = "git://github.com/airblade/vim-gitgutter.git"
+	path = pack/mathias/start/util-gitgutter
+[submodule "bundle/nerdtree"]
+	url = "https://github.com/scrooloose/nerdtree.git"
+	path = pack/mathias/start/util-nerdtree
+[submodule "bundle/nerdtree-git-plugin"]
+	url = "https://github.com/Xuyuanp/nerdtree-git-plugin.git"
+	path = pack/mathias/start/util-nerdtree-git
+[submodule "bundle/nerdcommenter"]
+	url = "https://github.com/scrooloose/nerdcommenter.git"
+	path = pack/mathias/start/util-nerdcommenter
+[submodule "bundle/vimtex"]
+	url = "https://github.com/lervag/vimtex"
+	path = pack/mathias/start/pack-vimtex
+[submodule "bundle/vim-css-color"]
+	url = "https://github.com/ap/vim-css-color"
+	path = pack/mathias/start/util-css-color
+[submodule "bundle/vim-pandoc"]
+	url = "https://github.com/vim-pandoc/vim-pandoc"
+	path = pack/mathias/start/pack-pandoc
+[submodule "bundle/vim-pandoc-syntax"]
+	url = "https://github.com/vim-pandoc/vim-pandoc-syntax"
+	path = pack/mathias/start/syntax-pandoc
+[submodule "bundle/vim-jsdoc"]
+	url = "https://github.com/heavenshell/vim-jsdoc"
+	path = pack/mathias/start/util-jsdoc
+[submodule "bundle/vim-gnupg"]
+	url = "https://github.com/jamessan/vim-gnupg"
+	path = pack/mathias/start/pack-gnupg
+[submodule "bundle/vim-mkdir"]
+	url = "https://github.com/pbrisbin/vim-mkdir"
+	path = pack/mathias/start/util-mkdir-p
+[submodule "bundle/solarized"]
+	url = "https://github.com/altercation/solarized"
+	path = pack/mathias/start/colorscheme-solarized
+[submodule "bundle/tomorrow-theme"]
+	url = "https://github.com/chriskempson/tomorrow-theme"
+	path = pack/mathias/start/colorscheme-tomorrow
+[submodule "bundle/vim-emoji"]
+	url = "https://github.com/junegunn/vim-emoji"
+	path = pack/mathias/start/cool-emoji
+[submodule "bundle/vim-syntax-extra"]
+	url = "https://github.com/justinmk/vim-syntax-extra"
+	path = pack/mathias/start/syntax-bison-flex
+[submodule "bundle/goyo.vim"]
+	url = "https://github.com/junegunn/goyo.vim"
+	path = pack/mathias/start/cool-goyo
+[submodule "bundle/molokai"]
+	path = pack/mathias/start/colorscheme-molokai
+	url = https://github.com/tomasr/molokai
+[submodule "bundle/vim-startify"]
+	path = pack/mathias/start/cool-startify
+	url = https://github.com/mhinz/vim-startify.git
+[submodule "bundle/vim-multiple-cursors"]
+	path = pack/mathias/start/util-multiple-cursors
+	url = https://github.com/terryma/vim-multiple-cursors.git
+[submodule "bundle/vim-surround"]
+	path = pack/mathias/start/util-surround-text
+	url = https://github.com/tpope/vim-surround.git
+[submodule "pack/mathias/start/vim-airline"]
+	path = pack/mathias/start/cool-airline
+	url = https://github.com/bling/vim-airline.git
+[submodule "pack/mathias/start/vim-bufferline"]
+	path = pack/mathias/start/cool-bufferline
+	url = https://github.com/bling/vim-bufferline.git
+[submodule "pack/mathias/start/vim-airline-themes"]
+	path = pack/mathias/start/cool-airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes.git
+[submodule "pack/mathias/start/dracula"]
+	path = pack/mathias/start/colorscheme-dracula
+	url = https://github.com/dracula/vim.git
+[submodule "pack/mathias/start/git-fugitive"]
+	path = pack/mathias/start/pack-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+[submodule "pack/mathias/start/colorscheme-rupza"]
+	path = pack/mathias/start/colorscheme-rupza
+	url = https://github.com/felipesousa/rupza.git
+[submodule "pack/mathias/start/util-whitespace"]
+	path = pack/mathias/start/util-whitespace
+	url = https://github.com/ntpeters/vim-better-whitespace.git
+[submodule "pack/mathias/start/util-editorconfig"]
+  path = pack/mathias/start/util-editorconfig
+  url = https://github.com/editorconfig/editorconfig-vim.git
+[submodule "pack/mathias/start/util-wordy"]
+	path = pack/mathias/start/util-wordy
+	url = https://github.com/reedes/vim-wordy.git
+[submodule "pack/mathias/start/util-fzf.vim"]
+	path = pack/mathias/start/util-fzf.vim
+	url = https://github.com/junegunn/fzf.vim.git
+[submodule "pack/mathias/start/colorscheme-one"]
+	path = pack/mathias/start/colorscheme-one
+	url = https://github.com/rakr/vim-one.git
+[submodule "pack/mathias/start/util-ag"]
+	path = pack/mathias/start/util-ag
+	url = https://github.com/mileszs/ack.vim
+[submodule "pack/mathias/start/pack-fugitive-github"]
+	path = pack/mathias/start/pack-fugitive-github
+	url = https://github.com/tpope/vim-rhubarb.git
+[submodule "pack/mathias/start/pack-syntaxes"]
+	path = pack/mathias/start/pack-syntaxes
+	url = https://github.com/sheerun/vim-polyglot
+[submodule "pack/mathias/start/util-youcompleteme"]
+	path = pack/mathias/start/util-youcompleteme
+	url = https://github.com/Valloric/YouCompleteMe.git
