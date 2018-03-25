@@ -114,6 +114,12 @@ set display+=lastline " Display at least part of a wrapped line
 set autoindent        " Same indent on newline
 set smartindent       " Insert or remove indentation automatically
 
+" Prettier characters on utf8
+if has('multi_byte') && &encoding ==# 'utf-8'
+  let &listchars = 'tab:▸ ,extends:❯,precedes:❮,nbsp:±'
+else
+  let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:.'
+endif
 " }}}
 " Mappings {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -193,6 +199,9 @@ noremap <buffer> <silent> j gj
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
 
+" Saner <c-l> (clean screen)
+nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+
 " Searching
 set ignorecase
 set smartcase
@@ -202,6 +211,24 @@ set incsearch
 " Split direction for windows:
 set splitbelow
 set splitright
+
+" Temporary files go under .vim/files
+if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
+  call mkdir($HOME.'/.vim/files')
+endif
+" Backup files
+set backup
+set backupdir   =$HOME/.vim/files/backup/
+set backupext   =-vimbackup
+set backupskip  =
+" Swap files
+set directory   =$HOME/.vim/files/swap//
+set updatecount =100
+" Undo files
+set undofile
+set undodir     =$HOME/.vim/files/undo/
+" Viminfo files
+set viminfo     ='100,n$HOME/.vim/files/info/viminfo
 
 " Return to last edit position when opening files
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
