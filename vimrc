@@ -36,7 +36,7 @@ set cursorline
 " Folding
 set foldenable
 set foldmethod=indent
-set foldlevel=9999
+set foldlevelstart=20
 
 " Show extra lines vertically and horizontally
 set scrolloff=5
@@ -70,9 +70,8 @@ endif
 " }}}
 " Colors and Fonts {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Enable syntax highlighting
-syntax enable
+syntax on
 
 " Enable 256 colors palette in Gnome Terminal
 set termguicolors
@@ -81,13 +80,8 @@ if $COLORTERM == 'gnome-terminal'
 endif
 
 set background=dark
-try
-  colorscheme onedark
-  let g:airline_theme='dracula'
-catch
-  highlight Normal ctermbg=black
-  colorscheme dracula
-endtry
+colorscheme one
+"let g:airline_theme='dracula'
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -97,8 +91,10 @@ if has("gui_running")
   set guitablabel=%M\ %t
 endif
 
-" Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
+
+" Use italized comments
+highlight Comment cterm=italic
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
@@ -107,26 +103,16 @@ set ffs=unix,dos,mac
 " }}}
 " Text, tab and indent related {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Delete comments on line merges
-set formatoptions+=j
-
-" Use spaces instead of tabs
-set expandtab
-
-" Be smart when using tabs ;)
-set smarttab
-
-" 1 tab == 2 spaces
+set formatoptions+=j  " Delete comments on line merges
+set expandtab         " Use spaces instead of tabs
+set smarttab          "
 set shiftwidth=2
 set tabstop=2
-
-" Soft line breaks
-set linebreak
-set wrap
-
-set autoindent
-set smartindent
+set wrap              " Soft wrap
+set linebreak         " Be smart about where to wrap
+set display+=lastline " Display at least part of a wrapped line
+set autoindent        " Same indent on newline
+set smartindent       " Insert or remove indentation automatically
 
 " }}}
 " Mappings {{{
@@ -137,6 +123,10 @@ map <silent> <leader><cr> :noh<cr>
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+
+" Use space to fold/unfold
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
 
 " Move visually between windows
 map <C-j> <C-W>j
@@ -149,6 +139,17 @@ map <C-l> <C-W>l
 nnoremap <Leader>b :bp<CR>
 nnoremap <Leader>f :bn<CR>
 nnoremap <Leader>g :e#<CR>
+
+" Move lines around
+nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
+
+" Add empty lines
+nnoremap [<space>  :<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[
+nnoremap ]<space>  :<c-u>put =repeat(nr2char(10), v:count1)<cr>
+
+" Quickly edit a macro
+nnoremap <leader>m  :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
@@ -165,6 +166,10 @@ command! W w !sudo tee % > /dev/null
 " Open NERDTree
 map <leader>n :NERDTreeToggle<CR>
 
+" Know the current syntax group
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 " }}}
 " Behavior {{{
@@ -184,6 +189,10 @@ noremap <buffer> <silent> <down> gj
 noremap <buffer> <silent> k gk
 noremap <buffer> <silent> j gj
 
+" Sane n/N behavior
+nnoremap <expr> n  'Nn'[v:searchforward]
+nnoremap <expr> N  'nN'[v:searchforward]
+
 " Searching
 set ignorecase
 set smartcase
@@ -195,7 +204,11 @@ set splitbelow
 set splitright
 
 " Return to last edit position when opening files
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" Mark code and header file automatically
+autocmd BufLeave *.{c,cpp} mark C
+autocmd BufLeave *.{h,hpp} mark H
 
 " Spell checking
 set spelllang=en,es,fr
@@ -305,3 +318,5 @@ highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
 
+" Ack.vim (Use the_silver_searcher)
+let g:ackprg = 'ag --vimgrep'
