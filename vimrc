@@ -173,9 +173,13 @@ command! W w !sudo tee % > /dev/null
 map <leader>n :NERDTreeToggle<CR>
 
 " Know the current syntax group
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+nmap <leader>sp :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 
 " }}}
 " Behavior {{{
@@ -222,7 +226,7 @@ set backupdir   =$HOME/.vim/files/backup/
 set backupext   =-vimbackup
 set backupskip  =
 " Swap files
-set directory   =$HOME/.vim/files/swap//
+set directory   =$HOME/.vim/files/swap/
 set updatecount =100
 " Undo files
 set undofile
@@ -287,7 +291,46 @@ augroup END
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Airline
 set laststatus=2 " Always show the status line
-let g:airline#extensions#tabline#formatter = 'jsformatter'
+let g:airline_detect_spelllang=0 " Don't show the lang
+let g:airline_mode_map = {
+      \ '__' : '-',
+      \ 'n'  : 'N',
+      \ 'i'  : 'I',
+      \ 'R'  : 'R',
+      \ 'c'  : 'C',
+      \ 'v'  : 'V',
+      \ 'V'  : 'V',
+      \ '' : 'V',
+      \ 's'  : 'S',
+      \ 'S'  : 'S',
+      \ '' : 'S',
+      \ }
+
+" Airline symbols
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+let g:airline_symbols.crypt = '⼛'
+let g:airline_symbols.linenr = ''
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.paste = 'P'
+let g:airline_symbols.notexists = '∄'
+let g:airline_symbols.whitespace = ''
+
+" Whitespace problems in airline
+let g:airline#extensions#whitespace#trailing_format = 'tr:%s'
+let g:airline#extensions#whitespace#mixed_indent_format = 'mix:%s:'
+let g:airline#extensions#whitespace#long_format = 'l:%s'
+let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
+
+let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
+let g:airline#extensions#tabline#formatter = 'jsformatter' " Better path format
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
+
 let g:airline_theme='tomorrow'
 
 " ALE (Linters and Fixers)
