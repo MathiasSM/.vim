@@ -105,10 +105,10 @@ set ffs=unix,dos,mac
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set formatoptions+=j  " Delete comments on line merges
 set expandtab         " Use spaces instead of tabs
-set smarttab          "
+set smarttab
 set shiftwidth=2
 set tabstop=2
-set wrap              " Soft wrap
+set nowrap            " Soft wrap is cool, but nowrap by default
 set linebreak         " Be smart about where to wrap
 set display+=lastline " Display at least part of a wrapped line
 set autoindent        " Same indent on newline

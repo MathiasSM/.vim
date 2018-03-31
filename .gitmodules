@@ -109,3 +109,6 @@
 [submodule "pack/mathias/start/util-easy-align"]
 	path = pack/mathias/start/util-easy-align
 	url = https://github.com/junegunn/vim-easy-align
+[submodule "pack/mathias/start/util-tmux"]
+	path = pack/mathias/start/util-tmux
+	url = https://github.com/christoomey/vim-tmux-navigator
