@@ -73,23 +73,15 @@ endif
 " Enable syntax highlighting
 syntax on
 
-" Enable 256 colors palette in Gnome Terminal
+" Enable true colors
 set termguicolors
-if $COLORTERM == 'gnome-terminal'
-  set t_Co=256
-endif
+" Workaround for tmux
+set t_8f=[38;2;%lu;%lu;%lum
+set t_8b=[48;2;%lu;%lu;%lum
 
 set background=dark
 colorscheme one
 "let g:airline_theme='dracula'
-
-" Set extra options when running in GUI mode
-if has("gui_running")
-  set guioptions-=T
-  set guioptions-=e
-  set t_Co=256
-  set guitablabel=%M\ %t
-endif
 
 set encoding=utf8
 
