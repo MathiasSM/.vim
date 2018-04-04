@@ -15,7 +15,7 @@ set confirm               " Enable dialogs instead of annoying errors
 " }}}
 " VIM user interface {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Different cursors for different modes
+" Different cursors for different modes. Tmux-compatible
 if empty($TMUX)
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
@@ -36,7 +36,7 @@ set cursorline
 " Folding
 set foldenable
 set foldmethod=indent
-set foldlevelstart=20
+set foldlevelstart=5
 
 " Show extra lines vertically and horizontally
 set scrolloff=5
@@ -45,10 +45,10 @@ set sidescroll=10
 " Turn on the 'wild' menu
 set wildmenu
 
-" Ignore compiled files
+" Ignore ignorable files
 set wildignore=*.o,*~,*.pyc,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 
-" Height of the command bar
+" Some extra height of the command bar, for convenience
 set cmdheight=2
 
 " Show matching brackets when text indicator is over them
@@ -85,8 +85,9 @@ colorscheme one
 
 set encoding=utf8
 
-" Use italized comments
-highlight Comment cterm=italic
+" Use italized comments *-*
+highlight Comment        cterm=italic
+highlight vimLineComment cterm=italic
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
@@ -98,11 +99,11 @@ set ffs=unix,dos,mac
 set formatoptions+=j  " Delete comments on line merges
 set expandtab         " Use spaces instead of tabs
 set smarttab
-set shiftwidth=2
+set shiftwidth=2      " I like short tabs
 set tabstop=2
-set nowrap            " Soft wrap is cool, but nowrap by default
+set nowrap            " Soft wrap is cooler, but nowrap by default
 set linebreak         " Be smart about where to wrap
-set display+=lastline " Display at least part of a wrapped line
+set display+=lastline " Display part of those wrapped. Avoid jumps
 set autoindent        " Same indent on newline
 set smartindent       " Insert or remove indentation automatically
 
@@ -119,8 +120,24 @@ endif
 map <silent> <leader><cr> :noh<cr>
 
 " Visual mode pressing * or # searches for the current selection
-vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
-vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+vnoremap <silent> * :<C-u>call VisualSearch('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSearch('', '')<CR>?<C-R>=@/<CR><CR>
+function! VisualSearch(direction, extra_filter) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+
+    let l:pattern = escape(@", "\\/.*'$^~[]")
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+
+    if a:direction == 'gv'
+        call CmdLine("Ack '" . l:pattern . "' " )
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
 
 " Use space to fold/unfold
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
@@ -270,7 +287,6 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup languages
   autocmd!
-  "autocmd VimEnter * highlight clear SignColumn
   " Makefile
   autocmd BufEnter Makefile setlocal noexpandtab
   " ZSH
@@ -310,7 +326,7 @@ let g:airline_symbols.maxlinenr = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.branch = ''
 let g:airline_symbols.paste = 'P'
-let g:airline_symbols.notexists = '∄'
+let g:airline_symbols.notexists = ' ∄'
 let g:airline_symbols.whitespace = ''
 
 " Whitespace problems in airline
@@ -325,8 +341,8 @@ let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to ut
 
 let g:airline_theme='tomorrow'
 
-" ALE (Linters and Fixers)
-let g:airline#extensions#ale#enabled=1
+" ALE (Linters and Fixers) disabled by default
+let g:airline#extensions#ale#enabled=0
 let g:ale_fixers={
 \   'javascript': ['eslint'],
 \}
@@ -382,3 +398,4 @@ highlight StartifySpecial ctermfg=252
 
 " Ack.vim (Use the_silver_searcher)
 let g:ackprg = 'ag --vimgrep'
+
