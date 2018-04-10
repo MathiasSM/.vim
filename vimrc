@@ -297,6 +297,10 @@ augroup END
 " }}}
 " Plugin settings {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Ack.vim (Use the_silver_searcher)
+let g:ackprg = 'ag --vimgrep'
+
 " Airline
 set laststatus=2 " Always show the status line
 let g:airline_detect_spelllang=0 " Don't show the lang
@@ -379,6 +383,9 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
+" Pandoc
+let g:pandoc#syntax#conceal#use=0
+
 " Startify
 let g:startify_files_number = 5
 let g:startify_change_to_vcs_root = 1
@@ -395,7 +402,4 @@ highlight StartifyPath    ctermfg=245
 highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
-
-" Ack.vim (Use the_silver_searcher)
-let g:ackprg = 'ag --vimgrep'
 
