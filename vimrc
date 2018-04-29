@@ -181,6 +181,10 @@ command! W w !sudo tee % > /dev/null
 " Open NERDTree
 map <leader>n :NERDTreeToggle<CR>
 
+" Quickly navigate linting errors
+nnoremap <leader>an :ALENextWrap<cr>
+nnoremap <leader>ap :ALEPreviousWrap<cr>
+
 " Know the current syntax group
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
@@ -287,6 +291,8 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup languages
   autocmd!
+  " Javascript Flow
+  autocmd BufRead,BufNewFile *.js.flow set syntax=javascript
   " Makefile
   autocmd BufEnter Makefile setlocal noexpandtab
   " ZSH
@@ -350,6 +356,20 @@ let g:airline#extensions#ale#enabled=0
 let g:ale_fixers={
 \   'javascript': ['eslint'],
 \}
+let g:ale_linters = {
+\  'javascript': ['eslint', 'flow']
+\}
+let g:ale_pattern_options = {
+\ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
+\ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
+\}
+let g:ale_sign_error = 'X' " could use emoji
+let g:ale_sign_warning = '?' " could use emoji
+let g:ale_statusline_format = ['X %d', '? %d', '']
+" %linter% is the name of the linter that provided the message
+" %s is the error or warning message
+let g:ale_echo_msg_format = '%linter%: %s'
+" Map keys to navigate between lines with errors and warnings.
 
 " Bufferline
 let g:bufferline_echo = 0 " It's already on airline
