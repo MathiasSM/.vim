@@ -139,6 +139,12 @@ function! VisualSearch(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
+" Global search
+nmap S :%s//g<LEFT><LEFT>
+
+" Global replace matches to last search
+nmap <expr> M ':%s/' . @/ . '//g<LEFT><LEFT>'
+
 " Use space to fold/unfold
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
@@ -175,6 +181,9 @@ map <leader>pp :setlocal paste!<cr>
 " Toggle spell checking
 map <leader>ss :setlocal spell!<cr>
 
+" Toggle linters
+map <leader>aa :ALEToggle<cr>
+
 " :W sudo saves the file (useful for handling the permission-denied error)
 command! W w !sudo tee % > /dev/null
 
@@ -207,8 +216,6 @@ vnoremap > >gv
 
 " Move by visual line
 " Technically a mapping, too
-noremap <buffer> <silent> <up> gk
-noremap <buffer> <silent> <down> gj
 noremap <buffer> <silent> k gk
 noremap <buffer> <silent> j gj
 
@@ -220,10 +227,7 @@ nnoremap <expr> N  'nN'[v:searchforward]
 nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
 
 " Searching
-set ignorecase
-set smartcase
-set hlsearch
-set incsearch
+set ignorecase smartcase hlsearch incsearch
 
 " Split direction for windows:
 set splitbelow
@@ -240,19 +244,23 @@ set backupext   =-vimbackup
 set backupskip  =
 " Swap files
 set directory   =$HOME/.vim/files/swap/
-set updatecount =100
+set updatecount =50 " Rotates swaps on this number of keystrokes
 " Undo files
+set undolevels=5000
 set undofile
 set undodir     =$HOME/.vim/files/undo/
 " Viminfo files
 set viminfo     ='100,n$HOME/.vim/files/info/viminfo
 
-" Return to last edit position when opening files
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" Mark code and header file automatically
-autocmd BufLeave *.{c,cpp} mark C
-autocmd BufLeave *.{h,hpp} mark H
+augroup Behavior
+  autocmd!
+  " Re-read external changes
+  autocmd FocusGained,BufEnter * :silent! !
+  " Return to last edit position when opening files
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+  " Reload vimrc on every save
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC
+augroup END
 
 " Spell checking
 set spelllang=en,es,fr
@@ -283,19 +291,28 @@ function! <SID>BufcloseCloseIt()
 endfunction
 
 " Open NERDtree if opening a folder
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+augroup Bahavior
+  autocmd StdinReadPre * let s:std_in=1
+  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+augroup END
 
 " }}}
 " Language specifics {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup languages
   autocmd!
-  " Javascript Flow
-  autocmd BufRead,BufNewFile *.js.flow set syntax=javascript
+  " C, C++: Mark code and header file automatically
+  autocmd BufLeave *.{c,cpp} mark C
+  autocmd BufLeave *.{h,hpp} mark H
+  " Haskell Alex: syntax
+  autocmd BufEnter *.x setlocal filetype=haskell
+  " Javascript Flow: syntax
+  autocmd BufEnter *.js.flow setlocal filetype=javascript
   " Makefile
   autocmd BufEnter Makefile setlocal noexpandtab
-  " ZSH
+  " Pandoc: syntax for markdown
+  autocmd BufEnter *.md setlocal filetype=pandoc
+  " ZSH: syntax
   autocmd BufEnter *.zsh-theme setlocal filetype=zsh
 augroup END
 
@@ -355,13 +372,10 @@ let g:airline_theme='tomorrow'
 let g:airline#extensions#ale#enabled=0
 let g:ale_fixers={
 \   'javascript': ['eslint'],
+\   'haskell': ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
 \  'javascript': ['eslint', 'flow']
-\}
-let g:ale_pattern_options = {
-\ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
-\ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
 \}
 let g:ale_sign_error = 'X' " could use emoji
 let g:ale_sign_warning = '?' " could use emoji
@@ -369,7 +383,6 @@ let g:ale_statusline_format = ['X %d', '? %d', '']
 " %linter% is the name of the linter that provided the message
 " %s is the error or warning message
 let g:ale_echo_msg_format = '%linter%: %s'
-" Map keys to navigate between lines with errors and warnings.
 
 " Bufferline
 let g:bufferline_echo = 0 " It's already on airline
@@ -392,14 +405,14 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeCascadeOpenSingleChildDir = 1
 let g:NERDTreeCaseSensitiveSort = 1
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "x",
-    \ "Staged"    : "+",
-    \ "Untracked" : "*",
-    \ "Renamed"   : ">",
-    \ "Unmerged"  : "=",
+    \ "Modified"  : "✖",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✹",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
     \ "Deleted"   : "-",
-    \ "Dirty"     : "x",
-    \ "Clean"     : "0",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔",
     \ "Unknown"   : "?"
     \ }
 
@@ -413,7 +426,9 @@ let g:startify_fortune_use_unicode = 1
 let g:startify_enable_unsafe = 1
 let g:startify_custom_header = 'map(startify#fortune#boxed(), "\"   \".v:val")'
 let g:startify_relative_path = 1
-autocmd User Startified setlocal cursorline
+augroup Startify
+  autocmd User Startified setlocal cursorline
+augroup END
 highlight StartifyBracket ctermfg=026
 highlight StartifyFooter  ctermfg=240
 highlight StartifyHeader  ctermfg=110
