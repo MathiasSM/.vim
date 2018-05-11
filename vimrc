@@ -1,6 +1,6 @@
 " vim:foldmethod=marker:foldlevel=0
 
-" General {{{
+" General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want VIM
 set modelines=1           " Some times I use them
@@ -12,8 +12,7 @@ set ttyfast               " Batch send characters to screen (way faster)
 set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
 
-" }}}
-" VIM user interface {{{
+" VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Different cursors for different modes. Tmux-compatible
 if empty($TMUX)
@@ -46,7 +45,13 @@ set sidescroll=10
 set wildmenu
 
 " Ignore ignorable files
-set wildignore=*.o,*~,*.pyc,*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+set wildignore=*/.DS_Store                                  " macOS
+set wildignore+=*~                                          " Backups
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
+set wildignore+=*/node_modules/**                           " Big vendor dirs
+set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-code
+set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
+set wildignore+=*.class,*.0,*.pyc                           " Compiled code
 
 " Some extra height of the command bar, for convenience
 set cmdheight=2
@@ -67,8 +72,7 @@ if has("gui_macvim")
 endif
 
 
-" }}}
-" Colors and Fonts {{{
+" Colors and Fonts {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax on
@@ -93,8 +97,7 @@ highlight vimLineComment cterm=italic
 set ffs=unix,dos,mac
 
 
-" }}}
-" Text, tab and indent related {{{
+" Text, tab and indent related {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set formatoptions+=j  " Delete comments on line merges
 set expandtab         " Use spaces instead of tabs
@@ -113,13 +116,16 @@ if has('multi_byte') && &encoding ==# 'utf-8'
 else
   let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:.'
 endif
-" }}}
-" Mappings {{{
+
+
+" Mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Disable highlight
 map <silent> <leader><cr> :noh<cr>
+" Let's see how it goes
+inoremap jk <Esc>
 
-" Visual mode pressing * or # searches for the current selection
+" Visual mode pressing * or # searches for the current selection {{{2
 vnoremap <silent> * :<C-u>call VisualSearch('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSearch('', '')<CR>?<C-R>=@/<CR><CR>
 function! VisualSearch(direction, extra_filter) range
@@ -138,6 +144,7 @@ function! VisualSearch(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+"}}}
 
 " Global search
 nmap S :%s//g<LEFT><LEFT>
@@ -191,8 +198,8 @@ command! W w !sudo tee % > /dev/null
 map <leader>n :NERDTreeToggle<CR>
 
 " Quickly navigate linting errors
-nnoremap <leader>an :ALENextWrap<cr>
-nnoremap <leader>ap :ALEPreviousWrap<cr>
+nnoremap ]a :ALENextWrap<cr>
+nnoremap [a :ALEPreviousWrap<cr>
 
 " Know the current syntax group
 nmap <leader>sp :call <SID>SynStack()<CR>
@@ -203,8 +210,7 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
-" }}}
-" Behavior {{{
+" Behavior {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable mouse
 set mouse=a
@@ -233,7 +239,7 @@ set ignorecase smartcase hlsearch incsearch
 set splitbelow
 set splitright
 
-" Temporary files go under .vim/files
+" Temporary files go under .vim/files {{{2
 if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
   call mkdir($HOME.'/.vim/files')
 endif
@@ -251,6 +257,7 @@ set undofile
 set undodir     =$HOME/.vim/files/undo/
 " Viminfo files
 set viminfo     ='100,n$HOME/.vim/files/info/viminfo
+" }}}
 
 augroup Behavior
   autocmd!
@@ -269,7 +276,7 @@ set spelllang=en,es,fr
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" Don't close window, when deleting a buffer
+" Don't close window, when deleting a buffer {{{2
 command! Bclose call <SID>BufcloseCloseIt()
 function! <SID>BufcloseCloseIt()
    let l:currentBufNum = bufnr("%")
@@ -289,6 +296,7 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
+" }}}
 
 " Open NERDtree if opening a folder
 augroup Bahavior
@@ -296,8 +304,8 @@ augroup Bahavior
   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 augroup END
 
-" }}}
-" Language specifics {{{
+
+" Language specifics {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup languages
   autocmd!
@@ -317,16 +325,19 @@ augroup languages
 augroup END
 
 
-" }}}
-" Plugin settings {{{
+" Plugin settings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Ack.vim (Use the_silver_searcher)
+" Ack.vim (Use the_silver_searcher) {{{2
 let g:ackprg = 'ag --vimgrep'
 
-" Airline
+" Airline {{{2
 set laststatus=2 " Always show the status line
-let g:airline_detect_spelllang=0 " Don't show the lang
+let g:airline_exclude_preview = 0     " Don't manage previews' statuslines
+let g:airline_inactive_collapse=1     " Collapse left widgets in inactive windows
+let g:airline_skip_empty_sections = 1 " Skip empty widgets
+let g:airline_detect_spelllang=0      " Don't show the lang
+let g:airline_theme='tomorrow'
 let g:airline_mode_map = {
       \ '__' : '-',
       \ 'n'  : 'N',
@@ -341,35 +352,35 @@ let g:airline_mode_map = {
       \ '' : 'S',
       \ }
 
-" Airline symbols
+" Airline symbols {{{3
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
-let g:airline_left_sep = ''
-let g:airline_right_sep = ''
-let g:airline_symbols.crypt = '⼛'
-let g:airline_symbols.linenr = ''
-let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.crypt = '🔒'
 let g:airline_symbols.readonly = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.paste = 'P'
+let g:airline_symbols.paste = 'ρ'
 let g:airline_symbols.notexists = ' ∄'
-let g:airline_symbols.whitespace = ''
+let g:airline_symbols.spell = 'Ꞩ'
 
-" Whitespace problems in airline
+
+" Whitespace problems in airline {{{3
+let g:airline#extensions#whitespace#enabled = 0
 let g:airline#extensions#whitespace#trailing_format = 'tr:%s'
 let g:airline#extensions#whitespace#mixed_indent_format = 'mix:%s:'
 let g:airline#extensions#whitespace#long_format = 'l:%s'
 let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
 
+" Other (included) extensions {{{3
+let g:airline#extensions#branch#empty_message = ''
+let g:airline#extensions#branch#sha1_len = 5
 let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
-let g:airline#extensions#tabline#formatter = 'jsformatter' " Better path format
+
+" Other settings {{{3
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
 
-let g:airline_theme='tomorrow'
-
-" ALE (Linters and Fixers) disabled by default
-let g:airline#extensions#ale#enabled=0
+" ALE (Linters and Fixers) {{{2
+let g:airline#extensions#ale#enabled=1
+let g:ale_fix_on_save = 1
 let g:ale_fixers={
 \   'javascript': ['eslint'],
 \   'haskell': ['remove_trailing_lines', 'trim_whitespace'],
@@ -383,27 +394,30 @@ let g:ale_statusline_format = ['X %d', '? %d', '']
 " %linter% is the name of the linter that provided the message
 " %s is the error or warning message
 let g:ale_echo_msg_format = '%linter%: %s'
+" ALE lang-specifics
+let g:ale_javascript_prettier_use_local_config = 1
 
-" Bufferline
+" Bufferline {{{2
 let g:bufferline_echo = 0 " It's already on airline
 
-" Multicursor mode (vim-multiple-cursors)
+" Multicursor mode (vim-multiple-cursors) {{{2
 let g:multi_cursor_use_default_mapping=0
 let g:multi_cursor_next_key='<C-d>'
 let g:multi_cursor_prev_key='<C-p>'
 let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
 
-" NERDTree
+" NERDTree {{{2
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
-let NERDTreeMouseMode = 2 " Single click on directory to open
 let NERDTreeChDirMode = 2 " Change the CWD with the tree root
-let g:NERDTreeShowHidden=1
-let g:NERDTreeSortOrder = ['\/$'] " Directories first
-let g:NERDTreeNaturalSort = 1
-let g:NERDTreeMinimalUI = 1
+let NERDTreeMouseMode = 2 " Single click on directory to open
+let NERDTreeRespectWildIgnore = 1
 let g:NERDTreeCascadeOpenSingleChildDir = 1
 let g:NERDTreeCaseSensitiveSort = 1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeNaturalSort = 1
+let g:NERDTreeShowHidden=1
+let g:NERDTreeSortOrder = ['\/$'] " Directories first
 let g:NERDTreeIndicatorMapCustom = {
     \ "Modified"  : "✖",
     \ "Staged"    : "✚",
@@ -416,10 +430,10 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
-" Pandoc
+" Pandoc {{{2
 let g:pandoc#syntax#conceal#use=0
 
-" Startify
+" Startify {{{2
 let g:startify_files_number = 5
 let g:startify_change_to_vcs_root = 1
 let g:startify_fortune_use_unicode = 1
