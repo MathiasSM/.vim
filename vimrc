@@ -201,6 +201,15 @@ map <leader>n :NERDTreeToggle<CR>
 nnoremap ]a :ALENextWrap<cr>
 nnoremap [a :ALEPreviousWrap<cr>
 
+" YouCompleteMe Magic
+nnoremap <leader>g :YcmCompleter GoTo<CR>
+nnoremap <leader>G :YcmCompleter GoToImprecise<CR>
+nnoremap <leader>gt :YcmCompleter GetType<CR>
+nnoremap <leader>gT :YcmCompleter GetTypeImprecise<CR>
+nnoremap <leader>gd :YcmCompleter GetDoc<CR>
+nnoremap <leader>gD :YcmCompleter GetDocImprecise<CR>
+nnoremap <leader>fi :YcmCompleter FixIt<CR>
+
 " Know the current syntax group
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
@@ -304,6 +313,7 @@ augroup Bahavior
   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 augroup END
 
+set exrc " Allow project-specific configuration file
 
 " Language specifics {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -380,20 +390,38 @@ let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to ut
 
 " ALE (Linters and Fixers) {{{2
 let g:airline#extensions#ale#enabled=1
+let g:ale_sign_column_always = 1
+
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_filetype_changed = 1
+
 let g:ale_fix_on_save = 1
+
+" Do not lint or fix minified files.
+let g:ale_pattern_options = {
+\ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
+\ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
+\}
 let g:ale_fixers={
-\   'javascript': ['eslint'],
+\   'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
 \   'haskell': ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
 \  'javascript': ['eslint', 'flow']
 \}
-let g:ale_sign_error = 'X' " could use emoji
-let g:ale_sign_warning = '?' " could use emoji
+let g:ale_linter_aliases = {
+\   'zsh': 'sh',
+\   'csh': 'sh',
+\   'pandoc': 'markdown',
+\}
+let g:ale_sign_error = '❌' " could use emoji
+let g:ale_sign_warning = '☢' " could use emoji
 let g:ale_statusline_format = ['X %d', '? %d', '']
 " %linter% is the name of the linter that provided the message
 " %s is the error or warning message
-let g:ale_echo_msg_format = '%linter%: %s'
+let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 " ALE lang-specifics
 let g:ale_javascript_prettier_use_local_config = 1
 
@@ -451,4 +479,7 @@ highlight StartifyPath    ctermfg=245
 highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set secure " Keep safe from bad project-specific files
 
