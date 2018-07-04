@@ -106,3 +106,15 @@
 [submodule "pack/mathias/start/util-tcomment"]
 	path = pack/mathias/start/util-tcomment
 	url = https://github.com/tomtom/tcomment_vim
+[submodule "pack/mathias/start/util-repeat"]
+	path = pack/mathias/start/util-repeat
+	url = https://github.com/tpope/vim-repeat
+[submodule "pack/mathias/start/util-expand-region"]
+	path = pack/mathias/start/util-expand-region
+	url = https://github.com/terryma/vim-expand-region
+[submodule "pack/mathias/start/util-undotree"]
+	path = pack/mathias/start/util-undotree
+	url = https://github.com/sjl/gundo.vim
+[submodule "pack/mathias/start/util-indent-lines"]
+	path = pack/mathias/start/util-indent-lines
+	url = git://github.com/nathanaelkane/vim-indent-guides.git
