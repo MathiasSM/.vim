@@ -336,7 +336,7 @@ augroup languages
   " Javascript Flow: syntax
   autocmd BufEnter *.js.flow setlocal filetype=javascript
   " Makefile
-  autocmd BufEnter Makefile setlocal noexpandtab
+  autocmd Filetype Makefile setlocal noexpandtab
   " Pandoc: syntax for markdown
   autocmd BufEnter *.md setlocal filetype=pandoc
   " ZSH: syntax
@@ -444,6 +444,12 @@ let g:bufferline_echo = 0        " It's already on airline
 let g:bufferline_rotate = 1      " Fixed current buffer position
 let g:bufferline_fixed_index = 0 " Always first
 
+" Emoji {{{2
+augroup languages
+  " For markdown and git
+  autocmd FileType pandoc,markdown,git,gitcommit,gitconfig,gitrebase,gitsendemail set omnifunc=emoji#complete
+augroup END
+
 " NERDTree {{{2
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
 let NERDTreeChDirMode = 2        " Change the CWD with the tree root
@@ -489,6 +495,7 @@ highlight StartifyPath    ctermfg=245
 highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set secure " Keep safe from bad project-specific files
