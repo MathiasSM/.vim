@@ -10,9 +10,6 @@
 [submodule "bundle/nerdtree-git-plugin"]
 	url = "https://github.com/Xuyuanp/nerdtree-git-plugin.git"
 	path = pack/mathias/start/util-nerdtree-git
-[submodule "bundle/nerdcommenter"]
-	url = "https://github.com/scrooloose/nerdcommenter.git"
-	path = pack/mathias/start/util-nerdcommenter
 [submodule "bundle/vimtex"]
 	url = "https://github.com/lervag/vimtex"
 	path = pack/mathias/start/pack-vimtex
@@ -43,9 +40,6 @@
 [submodule "bundle/vim-emoji"]
 	url = "https://github.com/junegunn/vim-emoji"
 	path = pack/mathias/start/cool-emoji
-[submodule "bundle/vim-syntax-extra"]
-	url = "https://github.com/justinmk/vim-syntax-extra"
-	path = pack/mathias/start/syntax-bison-flex
 [submodule "bundle/goyo.vim"]
 	url = "https://github.com/junegunn/goyo.vim"
 	path = pack/mathias/start/cool-goyo
@@ -109,3 +103,6 @@
 [submodule "pack/mathias/start/util-tmux"]
 	path = pack/mathias/start/util-tmux
 	url = https://github.com/christoomey/vim-tmux-navigator
+[submodule "pack/mathias/start/util-tcomment"]
+	path = pack/mathias/start/util-tcomment
+	url = https://github.com/tomtom/tcomment_vim
