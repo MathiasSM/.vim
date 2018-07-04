@@ -4,13 +4,14 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want VIM
 set modelines=1           " Some times I use them
-set history=1500          " REMEMBER
+set history=1500         " REMEMBER
 filetype plugin indent on " Load indent and plugin files for filetype
 set autoread              " When file changes outside of vim
 set clipboard=unnamed     " Use system clipboard to yank
 set ttyfast               " Batch send characters to screen (way faster)
 set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
+set hidden                " Allows to keep several non-saved buffers
 
 " VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -25,12 +26,15 @@ else
   let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
 endif
 
+" Highlight current line
+set cursorline
+
+" Set terminal title
+set title
+
 " Show line numbers
 set number
 set relativenumber
-
-" Highlight current line
-set cursorline
 
 " Folding
 set foldenable
@@ -46,7 +50,7 @@ set wildmenu
 
 " Ignore ignorable files
 set wildignore=*/.DS_Store                                  " macOS
-set wildignore+=*~                                          " Backups
+set wildignore+=*~,*.swp,*.bak                              " Backups
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
 set wildignore+=*/node_modules/**                           " Big vendor dirs
 set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-code
@@ -120,10 +124,36 @@ endif
 
 " Mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Disable highlight
-map <silent> <leader><cr> :noh<cr>
 " Let's see how it goes
 inoremap jk <Esc>
+
+" Disable highlight
+map <silent> <leader><cr> :noh<cr>
+
+" Global replace matches to last search
+nmap <expr> M ':%s/' . @/ . '//g<LEFT><LEFT>'
+
+" Quickly edit a macro
+nnoremap <leader>m  :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>
+
+" Switch CWD to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+" :W sudo saves the file (useful for handling the permission-denied error)
+command! W w !sudo tee % > /dev/null
+
+" Open NERDTree
+map <leader>n :NERDTreeToggle<CR>
+
+" Saner <c-l> (clean screen)
+nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+
+" Global search
+nmap S :%s//g<LEFT><LEFT>
+
+" Use space to fold/unfold
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
 
 " Visual mode pressing * or # searches for the current selection {{{2
 vnoremap <silent> * :<C-u>call VisualSearch('', '')<CR>/<C-R>=@/<CR><CR>
@@ -145,16 +175,10 @@ function! VisualSearch(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 "}}}
-
-" Global search
-nmap S :%s//g<LEFT><LEFT>
-
-" Global replace matches to last search
-nmap <expr> M ':%s/' . @/ . '//g<LEFT><LEFT>'
-
-" Use space to fold/unfold
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
+" Movement {{{2
+" Move by visual line
+noremap <silent> k gk
+noremap <silent> j gj
 
 " Move visually between windows
 map <C-j> <C-W>j
@@ -162,26 +186,28 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Mappings to access buffers
-" \b \f \g : go back/forward/last-used
-nnoremap <Leader>b :bp<CR>
-nnoremap <Leader>f :bn<CR>
-nnoremap <Leader>g :e#<CR>
-
+" Move only via hjkl
+map <up>    <nop>
+map <down>  <nop>
+map <left>  <nop>
+map <right> <nop>
+"}}}
+" Navigate {{{2
 " Move lines around
 nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
 nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
 
-" Add empty lines
-nnoremap [<space>  :<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[
-nnoremap ]<space>  :<c-u>put =repeat(nr2char(10), v:count1)<cr>
+" Quickly navigate linting errors
+nnoremap ]a :ALENextWrap<cr>
+nnoremap [a :ALEPreviousWrap<cr>
 
-" Quickly edit a macro
-nnoremap <leader>m  :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>
-
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
+" Mappings to navigate buffers
+" \b \f \g : go back/forward/last-used
+nnoremap <Leader>b :bp<CR>
+nnoremap <Leader>f :bn<CR>
+nnoremap <Leader>g :e#<CR>
+" }}}
+" Toggle behavior modes {{{2
 " Toggle paste mode
 map <leader>pp :setlocal paste!<cr>
 
@@ -190,27 +216,17 @@ map <leader>ss :setlocal spell!<cr>
 
 " Toggle linters
 map <leader>aa :ALEToggle<cr>
-
-" :W sudo saves the file (useful for handling the permission-denied error)
-command! W w !sudo tee % > /dev/null
-
-" Open NERDTree
-map <leader>n :NERDTreeToggle<CR>
-
-" Quickly navigate linting errors
-nnoremap ]a :ALENextWrap<cr>
-nnoremap [a :ALEPreviousWrap<cr>
-
-" YouCompleteMe Magic
-nnoremap <leader>g :YcmCompleter GoTo<CR>
-nnoremap <leader>G :YcmCompleter GoToImprecise<CR>
+" }}}
+" YouCompleteMe Magic {{{2
+nnoremap <leader>g  :YcmCompleter GoTo<CR>
+nnoremap <leader>G  :YcmCompleter GoToImprecise<CR>
 nnoremap <leader>gt :YcmCompleter GetType<CR>
 nnoremap <leader>gT :YcmCompleter GetTypeImprecise<CR>
 nnoremap <leader>gd :YcmCompleter GetDoc<CR>
 nnoremap <leader>gD :YcmCompleter GetDocImprecise<CR>
 nnoremap <leader>fi :YcmCompleter FixIt<CR>
-
-" Know the current syntax group
+" }}}
+" Know the current syntax group {{{2
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
@@ -218,6 +234,7 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+" }}}
 
 " Behavior {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -229,17 +246,9 @@ set mouse=a
 vnoremap < <gv
 vnoremap > >gv
 
-" Move by visual line
-" Technically a mapping, too
-noremap <buffer> <silent> k gk
-noremap <buffer> <silent> j gj
-
 " Sane n/N behavior
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
-
-" Saner <c-l> (clean screen)
-nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
 
 " Searching
 set ignorecase smartcase hlsearch incsearch
@@ -308,7 +317,7 @@ endfunction
 " }}}
 
 " Open NERDtree if opening a folder
-augroup Bahavior
+augroup Behavior
   autocmd StdinReadPre * let s:std_in=1
   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 augroup END
@@ -384,9 +393,14 @@ let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#sha1_len = 5
 let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
+call airline#parts#define_raw('linenr', '%l')
+call airline#parts#define_accent('linenr', 'bold')
+let g:airline_section_z = airline#section#create(['%3p%% ',
+            \ g:airline_symbols.linenr .' ', 'linenr', ':%c'])
 
 " Other settings {{{3
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
+" }}}
 
 " ALE (Linters and Fixers) {{{2
 let g:airline#extensions#ale#enabled=1
@@ -426,35 +440,31 @@ let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 let g:ale_javascript_prettier_use_local_config = 1
 
 " Bufferline {{{2
-let g:bufferline_echo = 0 " It's already on airline
-
-" Multicursor mode (vim-multiple-cursors) {{{2
-let g:multi_cursor_use_default_mapping=0
-let g:multi_cursor_next_key='<C-d>'
-let g:multi_cursor_prev_key='<C-p>'
-let g:multi_cursor_skip_key='<C-x>'
-let g:multi_cursor_quit_key='<Esc>'
+let g:bufferline_echo = 0        " It's already on airline
+let g:bufferline_rotate = 1      " Fixed current buffer position
+let g:bufferline_fixed_index = 0 " Always first
 
 " NERDTree {{{2
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
-let NERDTreeChDirMode = 2 " Change the CWD with the tree root
-let NERDTreeMouseMode = 2 " Single click on directory to open
+let NERDTreeChDirMode = 2        " Change the CWD with the tree root
+let NERDTreeMouseMode = 2        " Single click on directory to open
 let NERDTreeRespectWildIgnore = 1
 let g:NERDTreeCascadeOpenSingleChildDir = 1
 let g:NERDTreeCaseSensitiveSort = 1
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeNaturalSort = 1
-let g:NERDTreeShowHidden=1
+let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortOrder = ['\/$'] " Directories first
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "✖",
+    \ "Modified"  : "✹",
     \ "Staged"    : "✚",
-    \ "Untracked" : "✹",
+    \ "Untracked" : "✭",
     \ "Renamed"   : "➜",
     \ "Unmerged"  : "═",
-    \ "Deleted"   : "-",
+    \ "Deleted"   : "✖",
     \ "Dirty"     : "✗",
-    \ "Clean"     : "✔",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
     \ "Unknown"   : "?"
     \ }
 
