@@ -94,9 +94,6 @@
 [submodule "pack/mathias/start/pack-syntaxes"]
 	path = pack/mathias/start/pack-syntaxes
 	url = https://github.com/sheerun/vim-polyglot
-[submodule "pack/mathias/start/util-youcompleteme"]
-	path = pack/mathias/start/util-youcompleteme
-	url = https://github.com/Valloric/YouCompleteMe.git
 [submodule "pack/mathias/start/util-easy-align"]
 	path = pack/mathias/start/util-easy-align
 	url = https://github.com/junegunn/vim-easy-align

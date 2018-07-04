@@ -393,10 +393,13 @@ let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#sha1_len = 5
 let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
-call airline#parts#define_raw('linenr', '%l')
-call airline#parts#define_accent('linenr', 'bold')
-let g:airline_section_z = airline#section#create(['%3p%% ',
-            \ g:airline_symbols.linenr .' ', 'linenr', ':%c'])
+function! AirlineInit()
+  call airline#parts#define_raw('linenr', '%l')
+  call airline#parts#define_accent('linenr', 'bold')
+  let g:airline_section_z = airline#section#create(['%3p%% ',
+              \ g:airline_symbols.linenr .' ', 'linenr', ':%c'])
+endfunction
+autocmd VimEnter * call AirlineInit()
 
 " Other settings {{{3
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
@@ -477,6 +480,7 @@ let g:NERDTreeIndicatorMapCustom = {
 " Pandoc {{{2
 let g:pandoc#syntax#conceal#use=0
 
+"
 " Startify {{{2
 let g:startify_files_number = 5
 let g:startify_change_to_vcs_root = 1
@@ -496,7 +500,11 @@ highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
 
+" YouCompleteMe {{{2
+let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set secure " Keep safe from bad project-specific files
+
 
