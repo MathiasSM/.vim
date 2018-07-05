@@ -335,6 +335,8 @@ augroup languages
   autocmd BufEnter *.x setlocal filetype=haskell
   " Javascript Flow: syntax
   autocmd BufEnter *.js.flow setlocal filetype=javascript
+  " Ledger files
+  autocmd BufEnter *.ldg,*.ledger setlocal filetype=ledger | comp ledger
   " Makefile
   autocmd Filetype Makefile setlocal noexpandtab
   " Pandoc: syntax for markdown

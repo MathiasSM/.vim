@@ -115,3 +115,6 @@
 [submodule "pack/mathias/start/util-indent-lines"]
 	path = pack/mathias/start/util-indent-lines
 	url = git://github.com/nathanaelkane/vim-indent-guides.git
+[submodule "pack/mathias/start/syntax-ledger"]
+	path = pack/mathias/start/syntax-ledger
+	url = https://github.com/ledger/vim-ledger
