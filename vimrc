@@ -52,10 +52,11 @@ set wildmenu
 set wildignore=*/.DS_Store                                  " macOS
 set wildignore+=*~,*.swp,*.bak                              " Backups
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
-set wildignore+=*/node_modules/**                           " Big vendor dirs
+set wildignore+=*/node_modules/*                            " Big vendor dirs
 set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-code
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
 set wildignore+=*.class,*.0,*.pyc                           " Compiled code
+set wildignore+=*.stack-work                                " Build directories
 
 " Some extra height of the command bar, for convenience
 set cmdheight=2
@@ -87,9 +88,14 @@ set termguicolors
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
 
-set background=dark
+let g:airline_theme='dracula'
 colorscheme one
-"let g:airline_theme='dracula'
+let g:one_allow_italics = 1
+set background=dark
+
+let g:terminal_ansi_colors = [
+      \ '#1E2127', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#ABB2BF',
+      \ '#5C6370', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#FFFFFF' ]
 
 set encoding=utf8
 
@@ -459,8 +465,9 @@ augroup END
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
 let NERDTreeChDirMode = 2        " Change the CWD with the tree root
 let NERDTreeMouseMode = 2        " Single click on directory to open
-let NERDTreeRespectWildIgnore = 1
-let g:NERDTreeCascadeOpenSingleChildDir = 1
+let NERDTreeRespectWildIgnore = 0
+let g:NERDTreeCascadeSingleChildDir = 0
+let g:NERDTreeCascadeOpenSingleChildDir = 0
 let g:NERDTreeCaseSensitiveSort = 1
 let g:NERDTreeMinimalUI = 1
 let g:NERDTreeNaturalSort = 1
