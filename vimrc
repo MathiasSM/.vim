@@ -58,6 +58,9 @@ set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
 set wildignore+=*.class,*.0,*.pyc                           " Compiled code
 set wildignore+=*.stack-work                                " Build directories
 
+" Be able to change the tab name
+set guitablabel=%(exists('t:mytablabel')?t:mytablabel\ :'')
+
 " Some extra height of the command bar, for convenience
 set cmdheight=2
 
