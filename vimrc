@@ -59,7 +59,7 @@ set wildignore+=*.class,*.0,*.pyc                           " Compiled code
 set wildignore+=*.stack-work                                " Build directories
 
 " Be able to change the tab name
-set guitablabel=%(exists('t:mytablabel')?t:mytablabel\ :'')
+set guitablabel=%N\ %f
 
 " Some extra height of the command bar, for convenience
 set cmdheight=2
@@ -340,8 +340,8 @@ augroup languages
   " C, C++: Mark code and header file automatically
   autocmd BufLeave *.{c,cpp} mark C
   autocmd BufLeave *.{h,hpp} mark H
-  " Haskell Alex: syntax
-  autocmd BufEnter *.x setlocal filetype=haskell
+  " Haskell Alex/Happy: syntax
+  autocmd BufEnter *.x,*.y setlocal filetype=haskell
   " Javascript Flow: syntax
   autocmd BufEnter *.js.flow setlocal filetype=javascript
   " Ledger files
@@ -437,7 +437,8 @@ let g:ale_fixers={
 \   'haskell': ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
-\  'javascript': ['eslint', 'flow']
+\  'javascript': ['eslint', 'flow'],
+\  'haskell': ['hlint', 'hdevtools'],
 \}
 let g:ale_linter_aliases = {
 \   'zsh': 'sh',
@@ -452,6 +453,7 @@ let g:ale_statusline_format = ['X %d', '? %d', '']
 let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 " ALE lang-specifics
 let g:ale_javascript_prettier_use_local_config = 1
+let g:hdevtools_options = ''
 
 " Bufferline {{{2
 let g:bufferline_echo = 0        " It's already on airline
@@ -518,5 +520,4 @@ let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set secure " Keep safe from bad project-specific files
-
 
