@@ -55,7 +55,7 @@ set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
 set wildignore+=*/node_modules/*                            " Big vendor dirs
 set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-code
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
-set wildignore+=*.class,*.0,*.pyc                           " Compiled code
+set wildignore+=*.class,*.0,*.pyc,*.hi,*.o                  " Compiled code
 set wildignore+=*.stack-work                                " Build directories
 
 " Be able to change the tab name
@@ -471,6 +471,7 @@ let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTr
 let NERDTreeChDirMode = 2        " Change the CWD with the tree root
 let NERDTreeMouseMode = 2        " Single click on directory to open
 let NERDTreeRespectWildIgnore = 0
+let NERDTreeIgnore = ['\.hi$', '\.o$']
 let g:NERDTreeCascadeSingleChildDir = 0
 let g:NERDTreeCascadeOpenSingleChildDir = 0
 let g:NERDTreeCaseSensitiveSort = 1
