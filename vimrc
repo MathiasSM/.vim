@@ -276,7 +276,7 @@ set backupdir   =$HOME/.vim/files/backup/
 set backupext   =-vimbackup
 set backupskip  =
 " Swap files
-set directory   =$HOME/.vim/files/swap/
+set directory   =$HOME/.vim/files/swap//
 set updatecount =50 " Rotates swaps on this number of keystrokes
 " Undo files
 set undolevels=5000
