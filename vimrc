@@ -4,10 +4,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want VIM
 set modelines=1           " Some times I use them
-set history=1500         " REMEMBER
+set history=5000          " REMEMBER
 filetype plugin indent on " Load indent and plugin files for filetype
 set autoread              " When file changes outside of vim
-set clipboard=unnamed     " Use system clipboard to yank
+set clipboard=unnamedplus " Use system clipboard to yank
 set ttyfast               " Batch send characters to screen (way faster)
 set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
@@ -108,6 +108,20 @@ highlight vimLineComment cterm=italic
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
+
+if has("gui_running")
+  if has("gui_gtk2") || has("gui_gtk3")
+    set guifont=Hack\ 14
+  elseif has("gui_photon")
+    set guifont=Hack:s14
+  elseif has("gui_kde")
+    set guifont=Hack/14/-1/5/50/0/0/0/1/0
+  elseif has("x11")
+    set guifont=-*-courier-medium-r-normal-*-*-180-*-*-m-*-*
+  else " Windows
+    set guifont=Hack:h14:cDEFAULT
+  endif
+endif
 
 
 " Text, tab and indent related {{{1
