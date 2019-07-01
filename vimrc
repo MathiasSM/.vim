@@ -373,7 +373,9 @@ augroup END
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Ack.vim (Use the_silver_searcher) {{{2
-let g:ackprg = 'ag --vimgrep'
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 " Airline {{{2
 set laststatus=2 " Always show the status line
