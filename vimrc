@@ -1,6 +1,6 @@
 " vim:foldmethod=marker:foldlevel=0
 
-" General {{{1
+" General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want VIM
 set modelines=1           " Some times I use them
@@ -13,7 +13,7 @@ set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
 set hidden                " Allows to keep several non-saved buffers
 
-" VIM user interface {{{1
+" VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Different cursors for different modes. Tmux-compatible
 if empty($TMUX)
@@ -80,7 +80,7 @@ if has("gui_macvim")
 endif
 
 
-" Colors and Fonts {{{1
+" Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax on
@@ -95,6 +95,9 @@ let g:airline_theme='dracula'
 colorscheme one
 let g:one_allow_italics = 1
 set background=dark
+
+" Set a lighter color for inactive windows
+highlight ColorColumn ctermbg=0 guibg=#414c61
 
 let g:terminal_ansi_colors = [
       \ '#1E2127', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#ABB2BF',
@@ -124,7 +127,7 @@ if has("gui_running")
 endif
 
 
-" Text, tab and indent related {{{1
+" Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set formatoptions+=j  " Delete comments on line merges
 set expandtab         " Use spaces instead of tabs
@@ -145,7 +148,7 @@ else
 endif
 
 
-" Mappings {{{1
+" Mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Let's see how it goes
 inoremap jk <Esc>
@@ -178,7 +181,7 @@ nmap S :%s//g<LEFT><LEFT>
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
 
-" Visual mode pressing * or # searches for the current selection {{{2
+" Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSearch('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSearch('', '')<CR>?<C-R>=@/<CR><CR>
 function! VisualSearch(direction, extra_filter) range
@@ -197,8 +200,8 @@ function! VisualSearch(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
-"}}}
-" Movement {{{2
+
+" Movement
 " Move by visual line
 noremap <silent> k gk
 noremap <silent> j gj
@@ -214,8 +217,8 @@ map <up>    <nop>
 map <down>  <nop>
 map <left>  <nop>
 map <right> <nop>
-"}}}
-" Navigate {{{2
+
+" Navigate
 " Move lines around
 nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
 nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
@@ -226,11 +229,11 @@ nnoremap [a :ALEPreviousWrap<cr>
 
 " Mappings to navigate buffers
 " \b \f \g : go back/forward/last-used
-nnoremap <Leader>b :bp<CR>
-nnoremap <Leader>f :bn<CR>
+nnoremap <Leader>p :bp<CR>
+nnoremap <Leader>n :bn<CR>
 nnoremap <Leader>g :e#<CR>
-" }}}
-" Toggle behavior modes {{{2
+"
+" Toggle behavior modes
 " Toggle paste mode
 map <leader>pp :setlocal paste!<cr>
 
@@ -239,8 +242,8 @@ map <leader>ss :setlocal spell!<cr>
 
 " Toggle linters
 map <leader>aa :ALEToggle<cr>
-" }}}
-" YouCompleteMe Magic {{{2
+"
+" YouCompleteMe Magic
 nnoremap <leader>g  :YcmCompleter GoTo<CR>
 nnoremap <leader>G  :YcmCompleter GoToImprecise<CR>
 nnoremap <leader>gt :YcmCompleter GetType<CR>
@@ -248,8 +251,8 @@ nnoremap <leader>gT :YcmCompleter GetTypeImprecise<CR>
 nnoremap <leader>gd :YcmCompleter GetDoc<CR>
 nnoremap <leader>gD :YcmCompleter GetDocImprecise<CR>
 nnoremap <leader>fi :YcmCompleter FixIt<CR>
-" }}}
-" Know the current syntax group {{{2
+"
+" Know the current syntax group
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
@@ -257,9 +260,9 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-" }}}
+"
 
-" Behavior {{{1
+" Behavior
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable mouse
 set mouse=a
@@ -280,7 +283,7 @@ set ignorecase smartcase hlsearch incsearch
 set splitbelow
 set splitright
 
-" Temporary files go under .vim/files {{{2
+" Temporary files go under .vim/files
 if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
   call mkdir($HOME.'/.vim/files')
 endif
@@ -298,7 +301,6 @@ set undofile
 set undodir     =$HOME/.vim/files/undo/
 " Viminfo files
 set viminfo     ='100,n$HOME/.vim/files/info/viminfo
-" }}}
 
 augroup Behavior
   autocmd!
@@ -317,7 +319,7 @@ set spelllang=en,es,fr
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" Don't close window, when deleting a buffer {{{2
+" Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
 function! <SID>BufcloseCloseIt()
    let l:currentBufNum = bufnr("%")
@@ -337,7 +339,7 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
-" }}}
+"
 
 " Open NERDtree if opening a folder
 augroup Behavior
@@ -347,7 +349,7 @@ augroup END
 
 set exrc " Allow project-specific configuration file
 
-" Language specifics {{{1
+" Language specifics
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup languages
   autocmd!
@@ -369,15 +371,15 @@ augroup languages
 augroup END
 
 
-" Plugin settings {{{1
+" Plugin settings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Ack.vim (Use the_silver_searcher) {{{2
+" Ack.vim (Use the_silver_searcher)
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 
-" Airline {{{2
+" Airline
 set laststatus=2 " Always show the status line
 let g:airline_exclude_preview = 0     " Don't manage previews' statuslines
 let g:airline_inactive_collapse=1     " Collapse left widgets in inactive windows
@@ -398,7 +400,7 @@ let g:airline_mode_map = {
       \ '' : 'S',
       \ }
 
-" Airline symbols {{{3
+" Airline symbols
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
@@ -409,14 +411,14 @@ let g:airline_symbols.notexists = ' ∄'
 let g:airline_symbols.spell = 'Ꞩ'
 
 
-" Whitespace problems in airline {{{3
+" Whitespace problems in airline
 let g:airline#extensions#whitespace#enabled = 0
 let g:airline#extensions#whitespace#trailing_format = 'tr:%s'
 let g:airline#extensions#whitespace#mixed_indent_format = 'mix:%s:'
 let g:airline#extensions#whitespace#long_format = 'l:%s'
 let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
 
-" Other (included) extensions {{{3
+" Other (included) extensions
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#sha1_len = 5
 let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
@@ -428,11 +430,11 @@ function! AirlineInit()
 endfunction
 autocmd VimEnter * call AirlineInit()
 
-" Other settings {{{3
+" Other settings
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
-" }}}
+"
 
-" ALE (Linters and Fixers) {{{2
+" ALE (Linters and Fixers)
 let g:airline#extensions#ale#enabled=1
 let g:ale_sign_column_always = 1
 
@@ -471,18 +473,18 @@ let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 let g:ale_javascript_prettier_use_local_config = 1
 let g:hdevtools_options = ''
 
-" Bufferline {{{2
+" Bufferline
 let g:bufferline_echo = 0        " It's already on airline
 let g:bufferline_rotate = 1      " Fixed current buffer position
 let g:bufferline_fixed_index = 0 " Always first
 
-" Emoji {{{2
+" Emoji
 augroup languages
   " For markdown and git
   autocmd FileType pandoc,markdown,git,gitcommit,gitconfig,gitrebase,gitsendemail set omnifunc=emoji#complete
 augroup END
 
-" NERDTree {{{2
+" NERDTree
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
 let NERDTreeChDirMode = 2        " Change the CWD with the tree root
 let NERDTreeMouseMode = 2        " Single click on directory to open
@@ -508,11 +510,11 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
-" Pandoc {{{2
+" Pandoc
 let g:pandoc#syntax#conceal#use=0
 
 "
-" Startify {{{2
+" Startify
 let g:startify_files_number = 5
 let g:startify_change_to_vcs_root = 1
 let g:startify_fortune_use_unicode = 1
@@ -531,7 +533,7 @@ highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
 
-" YouCompleteMe {{{2
+" YouCompleteMe
 let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
 
 

@@ -118,3 +118,6 @@
 [submodule "pack/mathias/start/syntax-ledger"]
 	path = pack/mathias/start/syntax-ledger
 	url = https://github.com/ledger/vim-ledger
+[submodule "pack/mathias/start/util-diminactive"]
+	path = pack/mathias/start/util-diminactive
+	url = git@github.com:blueyed/vim-diminactive.git
