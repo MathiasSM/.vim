@@ -31,6 +31,7 @@ set cursorline
 
 " Set terminal title
 set title
+set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
 
 " Show line numbers
 set number
@@ -358,6 +359,7 @@ augroup languages
   autocmd BufLeave *.{h,hpp} mark H
   " Haskell Alex/Happy: syntax
   autocmd BufEnter *.x,*.y setlocal filetype=haskell
+  autocmd BufEnter *.xmobarrc setlocal filetype=haskell
   " Javascript Flow: syntax
   autocmd BufEnter *.js.flow setlocal filetype=javascript
   " Ledger files
@@ -513,7 +515,9 @@ let g:NERDTreeIndicatorMapCustom = {
 " Pandoc
 let g:pandoc#syntax#conceal#use=0
 
-"
+" Postgres / SQL
+let g:sql_type_default = 'pgsql'
+
 " Startify
 let g:startify_files_number = 5
 let g:startify_change_to_vcs_root = 1

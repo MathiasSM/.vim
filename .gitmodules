@@ -121,3 +121,6 @@
 [submodule "pack/mathias/start/util-diminactive"]
 	path = pack/mathias/start/util-diminactive
 	url = git@github.com:blueyed/vim-diminactive.git
+[submodule "pack/mathias/start/util-tmux-navigator"]
+	path = pack/mathias/start/util-tmux-navigator
+	url = git@github.com:christoomey/vim-tmux-navigator.git
