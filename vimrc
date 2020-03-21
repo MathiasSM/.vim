@@ -459,12 +459,14 @@ let g:ale_pattern_options = {
 \ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
 \}
 let g:ale_fixers={
+\   'java':       ['remove_trailing_lines', 'trim_whitespace'],
 \   'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-\   'haskell': ['remove_trailing_lines', 'trim_whitespace'],
+\   'haskell':    ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
+\  'java':       ['checkstyle'],
 \  'javascript': ['eslint', 'flow'],
-\  'haskell': ['hlint', 'hdevtools'],
+\  'haskell':    ['hlint', 'hdevtools'],
 \}
 let g:ale_linter_aliases = {
 \   'zsh': 'sh',
@@ -546,6 +548,11 @@ highlight StartifySpecial ctermfg=252
 " YouCompleteMe
 let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
 
+" Build plugin help files
+" Plugins need to be added to runtimepath before helptags can be generated
+packloadall
+" Load all of the helptags now, after plugins have been loaded.
+silent! helptags ALL
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set secure " Keep safe from bad project-specific files
