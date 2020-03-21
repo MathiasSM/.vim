@@ -1,5 +1,11 @@
 " vim:foldmethod=marker:foldlevel=0
 
+" External
+for f in split(glob('~/.vimrc.d/*.vim'), '\n')
+  exe 'source' f
+endfor
+
+"
 " General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want VIM
