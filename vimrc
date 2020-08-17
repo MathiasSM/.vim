@@ -507,7 +507,7 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeNaturalSort = 1
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortOrder = ['\/$'] " Directories first
-let g:NERDTreeIndicatorMapCustom = {
+let g:NERDTreeGitIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
     \ "Untracked" : "✭",
@@ -544,6 +544,9 @@ highlight StartifyPath    ctermfg=245
 highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
+
+" VimTex
+let g:tex_flavor = 'latex'
 
 " YouCompleteMe
 let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
