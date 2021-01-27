@@ -461,12 +461,15 @@ let g:ale_pattern_options = {
 let g:ale_fixers={
 \   'java':       ['remove_trailing_lines', 'trim_whitespace'],
 \   'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+\   'json':       ['jq'],
 \   'haskell':    ['remove_trailing_lines', 'trim_whitespace'],
+\   'typescript': ['prettier'],
 \}
 let g:ale_linters = {
-\  'java':       ['checkstyle'],
-\  'javascript': ['eslint', 'flow'],
-\  'haskell':    ['hlint', 'hdevtools'],
+\   'java':       ['checkstyle'],
+\   'javascript': ['eslint', 'flow'],
+\   'haskell':    ['hlint', 'hdevtools'],
+\   'typescript': ['eslint', 'typescript'],
 \}
 let g:ale_linter_aliases = {
 \   'zsh': 'sh',
