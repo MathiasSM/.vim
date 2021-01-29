@@ -469,7 +469,7 @@ let g:ale_linters = {
 \   'java':       ['checkstyle'],
 \   'javascript': ['eslint', 'flow'],
 \   'haskell':    ['hlint', 'hdevtools'],
-\   'typescript': ['eslint', 'typescript'],
+\   'typescript': ['eslint', 'tsserver'],
 \}
 let g:ale_linter_aliases = {
 \   'zsh': 'sh',
@@ -547,6 +547,10 @@ highlight StartifyPath    ctermfg=245
 highlight StartifySection ctermfg=167
 highlight StartifySlash   ctermfg=240
 highlight StartifySpecial ctermfg=252
+
+" Tmux Navigator
+"" Write all buffers before navigating from Vim to tmux pane
+let g:tmux_navigator_save_on_switch = 2
 
 " VimTex
 let g:tex_flavor = 'latex'
