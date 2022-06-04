@@ -98,7 +98,6 @@ set termguicolors
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
 
-let g:airline_theme='dracula'
 colorscheme one
 let g:one_allow_italics = 1
 set background=dark
@@ -408,6 +407,21 @@ let g:airline_mode_map = {
       \ '' : 'S',
       \ }
 
+let g:airline_filetype_overrides = {
+      \ 'coc-explorer':  [ 'CoC Explorer', '' ],
+      \ 'defx':  ['defx', '%{b:defx.paths[0]}'],
+      \ 'fugitive': ['fugitive', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
+      \ 'gundo': [ 'Gundo', '' ],
+      \ 'help':  [ 'Help', '%f' ],
+      \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
+      \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ],
+      \ 'startify': [ 'startify', '' ],
+      \ 'vim-plug': [ 'Plugins', '' ],
+      \ 'vimfiler': [ 'vimfiler', '%{vimfiler#get_status_string()}' ],
+      \ 'vimshell': ['vimshell','%{vimshell#get_status_string()}'],
+      \ 'vaffle' : [ 'Vaffle', '%{b:vaffle.dir}' ],
+      \ }
+
 " Airline symbols
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
@@ -417,7 +431,7 @@ let g:airline_symbols.readonly = ''
 let g:airline_symbols.paste = 'ρ'
 let g:airline_symbols.notexists = ' ∄'
 let g:airline_symbols.spell = 'Ꞩ'
-
+let g:airline_symbols.branch = '⎇'
 
 " Whitespace problems in airline
 let g:airline#extensions#whitespace#enabled = 0
@@ -427,9 +441,13 @@ let g:airline#extensions#whitespace#long_format = 'l:%s'
 let g:airline#extensions#whitespace#mixed_indent_file_format = 'mix:%s'
 
 " Other (included) extensions
+let g:airline#extensions#csv#column_display = 'Name'
+
+let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#sha1_len = 5
 let g:airline#extensions#branch#format = 2 " Truncate branch names to be a/b/c/branch
+
 function! AirlineInit()
   call airline#parts#define_raw('linenr', '%l')
   call airline#parts#define_accent('linenr', 'bold')
@@ -462,13 +480,13 @@ let g:ale_fixers={
 \   'java':       ['remove_trailing_lines', 'trim_whitespace'],
 \   'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
 \   'json':       ['jq'],
-\   'haskell':    ['remove_trailing_lines', 'trim_whitespace'],
+\   'haskell':    ['remove_trailing_lines', 'trim_whitespace', 'hlint', 'ormolu'],
 \   'typescript': ['prettier'],
 \}
 let g:ale_linters = {
 \   'java':       ['checkstyle'],
 \   'javascript': ['eslint', 'flow'],
-\   'haskell':    ['hlint', 'hdevtools'],
+\   'haskell':    ['hlint', 'hls'],
 \   'typescript': ['eslint', 'tsserver'],
 \}
 let g:ale_linter_aliases = {
@@ -484,7 +502,6 @@ let g:ale_statusline_format = ['X %d', '? %d', '']
 let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 " ALE lang-specifics
 let g:ale_javascript_prettier_use_local_config = 1
-let g:hdevtools_options = ''
 
 " Bufferline
 let g:bufferline_echo = 0        " It's already on airline

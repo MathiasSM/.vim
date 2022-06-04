@@ -52,6 +52,7 @@
 [submodule "pack/mathias/start/vim-gnupg"]
 	path = pack/mathias/start/vim-gnupg
 	url = https://github.com/jamessan/vim-gnupg
+	branch = main
 [submodule "pack/mathias/start/fzf.vim"]
 	path = pack/mathias/start/fzf.vim
 	url = https://github.com/junegunn/fzf.vim
