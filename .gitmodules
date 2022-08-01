@@ -19,9 +19,6 @@
 [submodule "pack/mathias/start/molokai"]
 	path = pack/mathias/start/molokai
 	url = https://github.com/tomasr/molokai
-[submodule "pack/mathias/start/nerdtree-git-plugin"]
-	path = pack/mathias/start/nerdtree-git-plugin
-	url = https://github.com/Xuyuanp/nerdtree-git-plugin
 [submodule "pack/mathias/start/solarized"]
 	path = pack/mathias/start/solarized
 	url = https://github.com/altercation/solarized
@@ -128,9 +125,6 @@
 [submodule "pack/mathias/start/ale"]
 	path = pack/mathias/start/ale
 	url = https://github.com/w0rp/ale
-[submodule "pack/mathias/start/mediawiki.vim"]
-	path = pack/mathias/start/mediawiki.vim
-	url = git://github.com/chikamichi/mediawiki.vim.git
 [submodule "pack/mathias/start/writegood.vim"]
 	path = pack/mathias/start/writegood.vim
 	url = git://github.com/davidbeckingsale/writegood.vim.git
