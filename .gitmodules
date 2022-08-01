@@ -4,9 +4,6 @@
 [submodule "pack/mathias/start/vim-indent-guides"]
 	path = pack/mathias/start/vim-indent-guides
 	url = https://github.com/nathanaelkane/vim-indent-guides
-[submodule "pack/mathias/start/vim-diminactive"]
-	path = pack/mathias/start/vim-diminactive
-	url = https://github.com/blueyed/vim-diminactive
 [submodule "pack/mathias/start/vim-tmux-navigator"]
 	path = pack/mathias/start/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator
@@ -19,9 +16,6 @@
 [submodule "pack/mathias/start/molokai"]
 	path = pack/mathias/start/molokai
 	url = https://github.com/tomasr/molokai
-[submodule "pack/mathias/start/solarized"]
-	path = pack/mathias/start/solarized
-	url = https://github.com/altercation/solarized
 [submodule "pack/mathias/start/vim-css-color"]
 	path = pack/mathias/start/vim-css-color
 	url = https://github.com/ap/vim-css-color
@@ -31,18 +25,12 @@
 [submodule "pack/mathias/start/vim-bufferline"]
 	path = pack/mathias/start/vim-bufferline
 	url = https://github.com/bling/vim-bufferline
-[submodule "pack/mathias/start/tomorrow-theme"]
-	path = pack/mathias/start/tomorrow-theme
-	url = https://github.com/chriskempson/tomorrow-theme
 [submodule "pack/mathias/start/vim"]
 	path = pack/mathias/start/vim
 	url = https://github.com/dracula/vim
 [submodule "pack/mathias/start/editorconfig-vim"]
 	path = pack/mathias/start/editorconfig-vim
 	url = https://github.com/editorconfig/editorconfig-vim
-[submodule "pack/mathias/start/rupza"]
-	path = pack/mathias/start/rupza
-	url = https://github.com/felipesousa/rupza
 [submodule "pack/mathias/start/vim-jsdoc"]
 	path = pack/mathias/start/vim-jsdoc
 	url = https://github.com/heavenshell/vim-jsdoc
@@ -71,9 +59,6 @@
 [submodule "pack/mathias/start/vim-startify"]
 	path = pack/mathias/start/vim-startify
 	url = https://github.com/mhinz/vim-startify
-[submodule "pack/mathias/start/ack.vim"]
-	path = pack/mathias/start/ack.vim
-	url = https://github.com/mileszs/ack.vim
 [submodule "pack/mathias/start/vim-better-whitespace"]
 	path = pack/mathias/start/vim-better-whitespace
 	url = https://github.com/ntpeters/vim-better-whitespace
