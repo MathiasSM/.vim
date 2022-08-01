@@ -128,15 +128,15 @@
 [submodule "pack/mathias/start/ale"]
 	path = pack/mathias/start/ale
 	url = https://github.com/w0rp/ale
-[submodule "/home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/mediawiki.vim"]
-	path = /home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/mediawiki.vim
+[submodule "pack/mathias/start/mediawiki.vim"]
+	path = pack/mathias/start/mediawiki.vim
 	url = git://github.com/chikamichi/mediawiki.vim.git
-[submodule "/home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/writegood.vim"]
-	path = /home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/writegood.vim
+[submodule "pack/mathias/start/writegood.vim"]
+	path = pack/mathias/start/writegood.vim
 	url = git://github.com/davidbeckingsale/writegood.vim.git
-[submodule "/home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/vim-gnupg"]
-	path = /home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/vim-gnupg
+[submodule "pack/mathias/start/vim-gnupg"]
+	path = pack/mathias/start/vim-gnupg
 	url = git@github.com:jamessan/vim-gnupg.git
-[submodule "/home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/vim-expand-region"]
-	path = /home/ANT.AMAZON.COM/enlovson/.vim/pack/mathias/start/vim-expand-region
+[submodule "pack/mathias/start/vim-expand-region"]
+	path = pack/mathias/start/vim-expand-region
 	url = git@github.com:terryma/vim-expand-region.git
