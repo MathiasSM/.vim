@@ -134,3 +134,6 @@
 [submodule "pack/mathias/start/vim-expand-region"]
 	path = pack/mathias/start/vim-expand-region
 	url = git@github.com:terryma/vim-expand-region.git
+[submodule "pack/mathias/start/vim-mediawiki"]
+	path = pack/mathias/start/vim-mediawiki
+	url = git@github.com:m-pilia/vim-mediawiki.git
