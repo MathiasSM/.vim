@@ -112,7 +112,7 @@
 	url = git@github.com:w0rp/ale
 [submodule "pack/mathias/start/writegood.vim"]
 	path = pack/mathias/start/writegood.vim
-	url = git://github.com/davidbeckingsale/writegood.vim.git
+	url = git@github.com:davidbeckingsale/writegood.vim.git
 [submodule "pack/mathias/start/vim-gnupg"]
 	path = pack/mathias/start/vim-gnupg
 	url = git@github.com:jamessan/vim-gnupg.git
