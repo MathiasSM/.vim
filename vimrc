@@ -13,7 +13,11 @@ set modelines=1           " Some times I use them
 set history=5000          " REMEMBER
 filetype plugin indent on " Load indent and plugin files for filetype
 set autoread              " When file changes outside of vim
-set clipboard=unnamedplus " Use system clipboard to yank
+if $OS == 'macos'
+  set clipboard=unnamed   " Use system clipboard to yank
+else
+  set clipboard=unnamedplus " Use system clipboard to yank
+endif
 set ttyfast               " Batch send characters to screen (way faster)
 set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
