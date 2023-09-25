@@ -134,3 +134,6 @@
 [submodule "pack/prose/start/thesaurus_query"]
 	path = pack/prose/start/thesaurus_query
 	url = git@github.com:Ron89/thesaurus_query.vim.git
+[submodule "pack/ui/start/vim-devicons"]
+	path = pack/ui/start/vim-devicons
+	url = git@github.com:ryanoasis/vim-devicons.git

@@ -168,9 +168,9 @@ set encoding=utf8
 " Use italized comments *-*
 set t_ZH=[3m
 set t_ZR=[23m
-highlight Comment        cterm=italic
-highlight vimComment     cterm=italic
-highlight vimLineComment cterm=italic
+" highlight Comment        cterm=italic
+" highlight vimComment     cterm=italic
+" highlight vimLineComment cterm=italic
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
@@ -445,7 +445,7 @@ augroup END
 
 
 " }}}
-" Plugin settings {{{
+" Plugin settings {{{{{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Ack.vim (Use the_silver_searcher)
@@ -558,6 +558,13 @@ let g:bufferline_echo = 0        " It's already on airline
 let g:bufferline_rotate = 1      " Fixed current buffer position
 let g:bufferline_fixed_index = 0 " Always first
 
+" Devicons
+if $OS == 'macos'
+  let g:WebDevIconsOS = 'Darwin'
+else
+  let g:WebDevIconsOS = 'Linux'
+endif
+
 " Emoji
 augroup languages
   " For markdown and git
@@ -577,6 +584,7 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeNaturalSort = 1
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortOrder = ['\/$'] " Directories first
+
 let g:NERDTreeGitIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
@@ -589,6 +597,142 @@ let g:NERDTreeGitIndicatorMapCustom = {
     \ 'Ignored'   : '☒',
     \ "Unknown"   : "?"
     \ }
+
+augroup NerdtreeDevicons
+  let g:colors = {
+        \ 'brown':       ["#905532", "Brown"],
+        \ 'aqua':        ["#3AFFDB", "Cyan"],
+        \ 'blue':        ["#689FB6", "Blue"],
+        \ 'darkBlue':    ["#44788E", "DarkBlue"],
+        \ 'purple':      ["#834F79", "DarkMagenta"],
+        \ 'lightPurple': ["#834F79", "Magenta"],
+        \ 'juliaPurple': ["#9558B2", "Magenta"],
+        \ 'red':         ["#AE403F", "DarkRed"],
+        \ 'beige':       ["#F5C06F", "Brown"],
+        \ 'yellow':      ["#F09F17", "Yellow"],
+        \ 'orange':      ["#D4843E", "Brown"],
+        \ 'darkOrange':  ["#F16529", "Brown"],
+        \ 'pink':        ["#CB6F6F", "Red"],
+        \ 'salmon':      ["#EE6E73", "Red"],
+        \ 'green':       ["#8FAA54", "DarkGreen"],
+        \ 'lightGreen':  ["#31B53E", "Green"],
+        \ 'white':       ["#FFFFFF", "White"]
+        \ }
+  " {{{ Color for each icon
+  let g:icon_colors = {
+        \ 'λ' :  g:colors['yellow'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['pink'],
+        \ '' :  g:colors['yellow'],
+        \ '' :  g:colors['purple'],
+        \ '' :  g:colors['purple'],
+        \ '' :  g:colors['yellow'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['beige'],
+        \ '' :  g:colors['beige'],
+        \ '' :  g:colors['aqua'],
+        \ '' :  g:colors['darkOrange'],
+        \ '' :  g:colors['orange'],
+        \ '' :  g:colors['pink'],
+        \ '' :  g:colors['yellow'],
+        \ '' :  g:colors['darkBlue'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['darkOrange'],
+        \ '' :  g:colors['brown'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['purple'],
+        \ '' :  g:colors['purple'],
+        \ '' :  g:colors['yellow'],
+        \ '' :  g:colors['juliaPurple'],
+        \ '' :  g:colors['beige'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['purple'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['red'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['darkOrange'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['darkBlue'],
+        \ '' :  g:colors['red'],
+        \ '' :  g:colors['orange'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['green'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['red'],
+        \ '' :  g:colors['lightPurple'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['darkOrange'],
+        \ '' :  g:colors['red'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['lightPurple'],
+        \ '' :  g:colors['darkOrange'],
+        \ '' :  g:colors['salmon'],
+        \ '' :  g:colors['darkBlue'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['orange'],
+        \ '' :  g:colors['blue'],
+        \ '' :  g:colors['aqua'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['white'],
+        \ '' :  g:colors['blue'],
+        \ '󰚩' :  g:colors['white'],
+        \ '󰓆' :  g:colors['white'],
+        \ '' :  g:colors['orange'],
+        \ '󰊄' :  g:colors['white'],
+        \ '󱂅' :  g:colors['white'],
+        \ '󱁉' :  g:colors['orange'],
+        \ '' :  g:colors['darkOrange']
+        \ }
+  " }}}
+  " {{{ Icons for extensions
+  let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {
+        \ 'log':   '󱂅',
+        \ 'puml':  '󱁉',
+        \ 'txt':   '󰊄',
+        \ 'spl':   '󰓆',
+        \ 'sug':   '󰓆',
+        \ 'r':     '',
+        \ 'rproj': '',
+        \ 'j2':    '',
+        \ 'cfg':   '',
+        \ 'tex':   '' }
+  " }}}
+  " {{{ Icons for exact filenames
+  let g:WebDevIconsUnicodeDecorateFileNodesExactSymbols = {
+        \ 'Config':          '',
+        \ 'packageInfo':     '',
+        \ '.git':            '',
+        \ '.gitmodules':     '',
+        \ '.gitignore':      '',
+        \ '.prettierignore': '',
+        \ '.eslintignore':   '',
+        \ '.taskrc':         '',
+        \ '.zpreztorc':      '',
+        \ '.psqlrc':         '',
+        \ '.muttrc':         '',
+        \ 'robots.txt':      '󰚩' }
+  " }}}
+  let s:icon_n=0
+  for icon in keys(g:icon_colors)
+    exec 'autocmd filetype nerdtree syntax match icon_'.s:icon_n.' /'.icon.'/ containedin=NERDTreeFlags'
+    exec 'autocmd filetype nerdtree highlight icon_'.s:icon_n.' ctermbg=none ctermfg='.g:icon_colors[icon][1].' guifg='.g:icon_colors[icon][0]
+    let s:icon_n += 1
+  endfor
+augroup END
+
 
 " Pandoc
 let g:pandoc#syntax#conceal#use=1
@@ -611,6 +755,6 @@ silent! helptags ALL
 
 
 
-" }}}
+" }}}}}}
 
 set secure " Show mappings, disallow further autocmd, shell and writes in rc
