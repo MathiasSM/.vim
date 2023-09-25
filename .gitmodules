@@ -122,3 +122,6 @@
 [submodule "pack/mathias/start/vim-mediawiki"]
 	path = pack/mathias/start/vim-mediawiki
 	url = git@github.com:m-pilia/vim-mediawiki.git
+[submodule "pack/mathias/opt/base16-vim"]
+	path = pack/mathias/opt/base16-vim
+	url = git@github.com:tinted-theming/base16-vim.git

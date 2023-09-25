@@ -1,14 +1,16 @@
-" vim:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=1
 
-" External
+" External {{{
 for f in split(glob('~/.vimrc.d/*.vim'), '\n')
   exe 'source' f
 endfor
 
-"
-" General
+
+
+" }}}
+" General {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set nocompatible          " Because we want VIM
+set nocompatible          " Because we want Vim instead of Vi
 set modelines=1           " Some times I use them
 set history=5000          " REMEMBER
 filetype plugin indent on " Load indent and plugin files for filetype
@@ -18,14 +20,22 @@ if $OS == 'macos'
 else
   set clipboard=unnamedplus " Use system clipboard to yank
 endif
-set ttyfast               " Batch send characters to screen (way faster)
+if hostname() =~ '.*\d\.amazon\.com'
+  set nottyfast           " Avoid batch send characters to screen on remote
+endif
 set lazyredraw            " Don't redraw on macros!
 set confirm               " Enable dialogs instead of annoying errors
 set hidden                " Allows to keep several non-saved buffers
+set noexrc " Do not allow project-specific configuration file
 
-" VIM user interface
+
+
+" }}}
+" VIM user interface {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Different cursors for different modes. Tmux-compatible
+" See also :help mouseshape
 if empty($TMUX)
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
@@ -52,22 +62,26 @@ set foldenable
 set foldmethod=indent
 set foldlevelstart=5
 
-" Show extra lines vertically and horizontally
-set scrolloff=5
-set sidescroll=10
+" Scrolling
+" set smoothscroll    " Scroll works with screen lines (wrapped lines ok)
+set scrolloff=0     " How many lines to always keep visible above/below cursor
+set sidescrolloff=0 " Same as above, for side scrolling
+set scrolljump=5    " How many lines to scroll when going out of screen
+set sidescroll=5    " Same as above, for side scrolling
 
 " Turn on the 'wild' menu
 set wildmenu
 
-" Ignore ignorable files
-set wildignore=*/.DS_Store                                  " macOS
-set wildignore+=*~,*.swp,*.bak                              " Backups
+" Ignore ignorable files TODO: Look into vim-wildignore plugin
+set wildignore=*/.DS_Store,*/._*                            " macOS
+set wildignore+=*~,*.swp,*.bak,*.tmp                        " Backups
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
 set wildignore+=*/node_modules/*                            " Big vendor dirs
-set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-code
+set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-text
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
 set wildignore+=*.class,*.0,*.pyc,*.hi,*.o                  " Compiled code
 set wildignore+=*.stack-work                                " Build directories
+set wildignore+=*/__pycache__/*                             " Cache directories
 
 " Be able to change the tab name
 set guitablabel=%N\ %f
@@ -91,23 +105,59 @@ if has("gui_macvim")
 endif
 
 
-" Colors and Fonts
+
+" }}}
+" Colors and Fonts {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Enable syntax highlighting
 syntax on
 
 " Enable true colors
-set termguicolors
-" Workaround for tmux
-set t_8f=[38;2;%lu;%lu;%lum
-set t_8b=[48;2;%lu;%lu;%lum
+if (has("termguicolors"))
+  set termguicolors
+  " Workaround for tmux
+  set t_8f=[38;2;%lu;%lu;%lum
+  set t_8b=[48;2;%lu;%lu;%lum
+endif
 
-colorscheme one
-let g:one_allow_italics = 1
+" Colorscheme / theme
 set background=dark
 
-" Set a lighter color for inactive windows
-highlight ColorColumn ctermbg=0 guibg=#414c61
+const g:preferred_colorschemes_dark = [
+      \ 'one',
+      \ 'base16-default-dark',
+      \ 'base16-ashes',
+      \ 'base16-atelier-dune',
+      \ 'base16-atelier-forest',
+      \ 'base16-ayu-mirage',
+      \ 'base16-google-dark',
+      \ 'base16-selenized-black',
+      \ 'base16-seti' ]
+const g:preferred_colorschemes_dark_size = len(preferred_colorschemes_dark)
+let current_colorscheme_i = 4 " Default colorscheme
+
+" Idempotently set a given colorscheme from the list
+function SetColorscheme(i, silence = 0)
+  let $current_colorscheme = g:preferred_colorschemes_dark[a:i % g:preferred_colorschemes_dark_size]
+  colorscheme $current_colorscheme
+  if !a:silence
+    echowindow "Current colorscheme: " . $current_colorscheme
+  endif
+endfunction
+
+" Rotate over the list of colorschemes
+function RotateColorscheme(step = 1)
+  let step = a:step
+  if a:step < 0
+    let step += g:preferred_colorschemes_dark_size
+  endif
+  let g:current_colorscheme_i = (g:current_colorscheme_i + step) % g:preferred_colorschemes_dark_size
+  call SetColorscheme(g:current_colorscheme_i)
+endfunction
+
+call SetColorscheme(current_colorscheme_i, 1)
+
 
 let g:terminal_ansi_colors = [
       \ '#1E2127', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#ABB2BF',
@@ -116,12 +166,16 @@ let g:terminal_ansi_colors = [
 set encoding=utf8
 
 " Use italized comments *-*
+set t_ZH=[3m
+set t_ZR=[23m
 highlight Comment        cterm=italic
+highlight vimComment     cterm=italic
 highlight vimLineComment cterm=italic
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
+" Change font on GUI version
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3")
     set guifont=Hack\ 14
@@ -137,15 +191,20 @@ if has("gui_running")
 endif
 
 
-" Text, tab and indent related
+
+" }}}
+" Text, tab and indent related {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 set formatoptions+=j  " Delete comments on line merges
 set expandtab         " Use spaces instead of tabs
 set smarttab
 set shiftwidth=2      " I like short tabs
 set tabstop=2
-set nowrap            " Soft wrap is cooler, but nowrap by default
-set linebreak         " Be smart about where to wrap
+set textwidth=0       " No hard wrap
+set nowrap            " No soft wrap by default
+set breakindent
+set linebreak         " Be smart about where to wrap lines
 set display+=lastline " Display part of those wrapped. Avoid jumps
 set autoindent        " Same indent on newline
 set smartindent       " Insert or remove indentation automatically
@@ -158,12 +217,12 @@ else
 endif
 
 
-" Mappings
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Let's see how it goes
-inoremap jk <Esc>
 
-" Disable highlight
+" }}}
+" Mappings {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" De-highlights search results
 map <silent> <leader><cr> :noh<cr>
 
 " Global replace matches to last search
@@ -211,6 +270,9 @@ function! VisualSearch(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
+" Visual block mode not constrained by line size
+set virtualedit=block
+
 " Movement
 " Move by visual line
 noremap <silent> k gk
@@ -233,18 +295,14 @@ map <right> <nop>
 nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
 nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
 
-" Quickly navigate linting errors
-nnoremap ]a :ALENextWrap<cr>
-nnoremap [a :ALEPreviousWrap<cr>
-
 " Mappings to navigate buffers
 " \b \f \g : go back/forward/last-used
-nnoremap <Leader>p :bp<CR>
-nnoremap <Leader>n :bn<CR>
-nnoremap <Leader>g :e#<CR>
-"
+nnoremap <Leader>b :bp<CR>
+nnoremap <Leader>f :bn<CR>
+nnoremap <Leader>p :e#<CR>
+
 " Toggle behavior modes
-" Toggle paste mode
+" Toggle paste mode (See also :help pastetoggle)
 map <leader>pp :setlocal paste!<cr>
 
 " Toggle spell checking
@@ -252,16 +310,7 @@ map <leader>ss :setlocal spell!<cr>
 
 " Toggle linters
 map <leader>aa :ALEToggle<cr>
-"
-" YouCompleteMe Magic
-nnoremap <leader>g  :YcmCompleter GoTo<CR>
-nnoremap <leader>G  :YcmCompleter GoToImprecise<CR>
-nnoremap <leader>gt :YcmCompleter GetType<CR>
-nnoremap <leader>gT :YcmCompleter GetTypeImprecise<CR>
-nnoremap <leader>gd :YcmCompleter GetDoc<CR>
-nnoremap <leader>gD :YcmCompleter GetDocImprecise<CR>
-nnoremap <leader>fi :YcmCompleter FixIt<CR>
-"
+
 " Know the current syntax group
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
@@ -270,11 +319,14 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-"
 
-" Behavior
+
+
+"}}}
+" Behavior {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enable mouse
+
+" Enable mouse in (a)ll modes
 set mouse=a
 
 " Select paragraphs when indented
@@ -282,9 +334,13 @@ set mouse=a
 vnoremap < <gv
 vnoremap > >gv
 
-" Sane n/N behavior
+" Sane n/N behavior (Navigate to next/prev search result)
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
+
+" Quickly navigate linting errors
+nnoremap ]a :ALENextWrap<cr>
+nnoremap [a :ALEPreviousWrap<cr>
 
 " Searching
 set ignorecase smartcase hlsearch incsearch
@@ -299,18 +355,21 @@ if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
 endif
 " Backup files
 set backup
-set backupdir   =$HOME/.vim/files/backup/
+set backupdir   =$HOME/.vim/files/backup//
 set backupext   =-vimbackup
 set backupskip  =
 " Swap files
+set swapfile
 set directory   =$HOME/.vim/files/swap//
-set updatecount =50 " Rotates swaps on this number of keystrokes
+set updatecount =50 " Rotates swaps after this number of characters
 " Undo files
 set undolevels=5000
 set undofile
-set undodir     =$HOME/.vim/files/undo/
+set undodir     =$HOME/.vim/files/undo//
 " Viminfo files
-set viminfo     ='100,n$HOME/.vim/files/info/viminfo
+set viminfo     ='100,r/tmp,r/media,r/mnt,r/Volumes,n$HOME/.vim/files/info/viminfo
+" Verbose file (:help verbose)
+set verbosefile =$HOME/.vim/files/verbose.log
 
 augroup Behavior
   autocmd!
@@ -324,6 +383,7 @@ augroup END
 
 " Spell checking
 set spelllang=en,es,fr
+set spelloptions =camel
 
 " Fix backspace and enable cursor wrapping
 set backspace=eol,start,indent
@@ -349,7 +409,6 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
-"
 
 " Open NERDtree if opening a folder
 augroup Behavior
@@ -357,10 +416,12 @@ augroup Behavior
   autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 augroup END
 
-set exrc " Allow project-specific configuration file
 
-" Language specifics
+
+" }}}
+" Language specifics {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 augroup languages
   autocmd!
   " C, C++: Mark code and header file automatically
@@ -382,7 +443,9 @@ augroup languages
 augroup END
 
 
-" Plugin settings
+
+" }}}
+" Plugin settings {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Ack.vim (Use the_silver_searcher)
@@ -395,7 +458,7 @@ set laststatus=2 " Always show the status line
 let g:airline_exclude_preview = 0     " Don't manage previews' statuslines
 let g:airline_inactive_collapse=1     " Collapse left widgets in inactive windows
 let g:airline_skip_empty_sections = 1 " Skip empty widgets
-let g:airline_detect_spelllang=0      " Don't show the lang
+let g:airline_detect_spelllang=1      " Don't show the lang
 let g:airline_theme='tomorrow'
 let g:airline_mode_map = {
       \ '__' : '-',
@@ -411,31 +474,16 @@ let g:airline_mode_map = {
       \ '' : 'S',
       \ }
 
-let g:airline_filetype_overrides = {
-      \ 'coc-explorer':  [ 'CoC Explorer', '' ],
-      \ 'defx':  ['defx', '%{b:defx.paths[0]}'],
-      \ 'fugitive': ['fugitive', '%{airline#util#wrap(airline#extensions#branch#get_head(),80)}'],
-      \ 'gundo': [ 'Gundo', '' ],
-      \ 'help':  [ 'Help', '%f' ],
-      \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
-      \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', 'NERD'), '' ],
-      \ 'startify': [ 'startify', '' ],
-      \ 'vim-plug': [ 'Plugins', '' ],
-      \ 'vimfiler': [ 'vimfiler', '%{vimfiler#get_status_string()}' ],
-      \ 'vimshell': ['vimshell','%{vimshell#get_status_string()}'],
-      \ 'vaffle' : [ 'Vaffle', '%{b:vaffle.dir}' ],
-      \ }
-
 " Airline symbols
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
-let g:airline_symbols.crypt = '🔒'
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.notexists = ' ∄'
-let g:airline_symbols.spell = 'Ꞩ'
-let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.crypt = ''
+let g:airline_symbols.readonly = 'ﾛ'
+let g:airline_symbols.paste = '🅟 '
+let g:airline_symbols.notexists = '∄'
+let g:airline_symbols.spell = '𝒮'
+let g:airline_symbols.branch = '⌥'
 
 " Whitespace problems in airline
 let g:airline#extensions#whitespace#enabled = 0
@@ -462,7 +510,6 @@ autocmd VimEnter * call AirlineInit()
 
 " Other settings
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
-"
 
 " ALE (Linters and Fixers)
 let g:airline#extensions#ale#enabled=1
@@ -486,6 +533,7 @@ let g:ale_fixers={
 \   'json':       ['jq'],
 \   'haskell':    ['remove_trailing_lines', 'trim_whitespace', 'hlint', 'ormolu'],
 \   'typescript': ['prettier'],
+\   '*':          ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
 \   'java':       ['checkstyle'],
@@ -494,12 +542,10 @@ let g:ale_linters = {
 \   'typescript': ['eslint', 'tsserver'],
 \}
 let g:ale_linter_aliases = {
-\   'zsh': 'sh',
-\   'csh': 'sh',
 \   'pandoc': 'markdown',
 \}
-let g:ale_sign_error = '❌' " could use emoji
-let g:ale_sign_warning = '☢' " could use emoji
+let g:ale_sign_error = '❌'   " Can use emoji
+let g:ale_sign_warning = '⚠️ ' " Can use emoji
 let g:ale_statusline_format = ['X %d', '? %d', '']
 " %linter% is the name of the linter that provided the message
 " %s is the error or warning message
@@ -522,7 +568,7 @@ augroup END
 let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
 let NERDTreeChDirMode = 2        " Change the CWD with the tree root
 let NERDTreeMouseMode = 2        " Single click on directory to open
-let NERDTreeRespectWildIgnore = 0
+let NERDTreeRespectWildIgnore = 1
 let NERDTreeIgnore = ['\.hi$', '\.o$']
 let g:NERDTreeCascadeSingleChildDir = 0
 let g:NERDTreeCascadeOpenSingleChildDir = 0
@@ -545,29 +591,10 @@ let g:NERDTreeGitIndicatorMapCustom = {
     \ }
 
 " Pandoc
-let g:pandoc#syntax#conceal#use=0
+let g:pandoc#syntax#conceal#use=1
 
 " Postgres / SQL
 let g:sql_type_default = 'pgsql'
-
-" Startify
-let g:startify_files_number = 5
-let g:startify_change_to_vcs_root = 1
-let g:startify_fortune_use_unicode = 1
-let g:startify_enable_unsafe = 1
-let g:startify_custom_header = 'map(startify#fortune#boxed(), "\"   \".v:val")'
-let g:startify_relative_path = 1
-augroup Startify
-  autocmd User Startified setlocal cursorline
-augroup END
-highlight StartifyBracket ctermfg=026
-highlight StartifyFooter  ctermfg=240
-highlight StartifyHeader  ctermfg=110
-highlight StartifyNumber  ctermfg=215
-highlight StartifyPath    ctermfg=245
-highlight StartifySection ctermfg=167
-highlight StartifySlash   ctermfg=240
-highlight StartifySpecial ctermfg=252
 
 " Tmux Navigator
 "" Write all buffers before navigating from Vim to tmux pane
@@ -576,15 +603,14 @@ let g:tmux_navigator_save_on_switch = 2
 " VimTex
 let g:tex_flavor = 'latex'
 
-" YouCompleteMe
-let g:ycm_python_binary_path="/usr/local/opt/python/libexec/bin/python"
-
 " Build plugin help files
 " Plugins need to be added to runtimepath before helptags can be generated
 packloadall
 " Load all of the helptags now, after plugins have been loaded.
 silent! helptags ALL
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set secure " Keep safe from bad project-specific files
 
+
+" }}}
+
+set secure " Show mappings, disallow further autocmd, shell and writes in rc
