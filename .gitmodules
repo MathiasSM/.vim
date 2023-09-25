@@ -128,3 +128,9 @@
 [submodule "pack/prose/start/vim-dirtytalk"]
 	path = pack/prose/start/vim-dirtytalk
 	url = git@github.com:psliwka/vim-dirtytalk.git
+[submodule "pack/actions/start/switch"]
+	path = pack/actions/start/switch
+	url = git@github.com:AndrewRadev/switch.vim.git
+[submodule "pack/prose/start/thesaurus_query"]
+	path = pack/prose/start/thesaurus_query
+	url = git@github.com:Ron89/thesaurus_query.vim.git
