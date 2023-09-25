@@ -125,3 +125,6 @@
 [submodule "pack/mathias/opt/base16-vim"]
 	path = pack/mathias/opt/base16-vim
 	url = git@github.com:tinted-theming/base16-vim.git
+[submodule "pack/prose/start/vim-dirtytalk"]
+	path = pack/prose/start/vim-dirtytalk
+	url = git@github.com:psliwka/vim-dirtytalk.git

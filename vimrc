@@ -382,8 +382,8 @@ augroup Behavior
 augroup END
 
 " Spell checking
-set spelllang=en,es,fr
-set spelloptions =camel
+set spelllang=en,es,fr,programming " From vim-dirtytalk
+set spelloptions=camel
 
 " Fix backspace and enable cursor wrapping
 set backspace=eol,start,indent
