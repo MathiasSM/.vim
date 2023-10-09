@@ -16,7 +16,10 @@ Plugins are included as git submodules.
 How to upgrade plugin versions
 --------------------------------------------------------------------------------
 
-TBD
+```sh
+git submodule update --remote # Pull changes on each plugin (not dependencies!)
+# Might need now to init/checkout subdependecies
+```
 
 
 

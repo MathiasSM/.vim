@@ -326,8 +326,16 @@ endfunc
 " Behavior {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Enable mouse in (a)ll modes
+" Enable mouse, without middle-click = paste
 set mouse=a
+imap <MiddleMouse> <Nop>
+imap <2-MiddleMouse> <Nop>
+imap <3-MiddleMouse> <Nop>
+imap <4-MiddleMouse> <Nop>
+map <MiddleMouse> <Nop>
+map <2-MiddleMouse> <Nop>
+map <3-MiddleMouse> <Nop>
+map <5-MiddleMouse> <Nop>
 
 " Select paragraphs when indented
 " Technically a mapping, though
