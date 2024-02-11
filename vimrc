@@ -1,37 +1,47 @@
 " vim:foldmethod=marker:foldlevel=1
 
-" External {{{
-for f in split(glob('~/.vimrc.d/*.vim'), '\n')
-  exe 'source' f
+" Private External Scripts (to run BEFORE everything)
+for f in split(glob('~/.vim/private/*.before.vim'), '\n')
+  execute 'source' f
 endfor
 
 
 
-" }}}
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
 " General {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible          " Because we want Vim instead of Vi
 set modelines=1           " Some times I use them
 set history=5000          " REMEMBER
+
+set encoding=utf8
+set ffs=unix,dos,mac      " Use Unix as the standard file type
+
 filetype plugin indent on " Load indent and plugin files for filetype
-set autoread              " When file changes outside of vim
+
+" Clipboard
 if $OS == 'macos'
-  set clipboard=unnamed   " Use system clipboard to yank
+  set clipboard=unnamed     " Use system clipboard to yank
 else
   set clipboard=unnamedplus " Use system clipboard to yank
 endif
+
+" Small optimizations
 if hostname() =~ '.*\d\.amazon\.com'
   set nottyfast           " Avoid batch send characters to screen on remote
 endif
 set lazyredraw            " Don't redraw on macros!
-set confirm               " Enable dialogs instead of annoying errors
-set hidden                " Allows to keep several non-saved buffers
-set noexrc " Do not allow project-specific configuration file
 
+" Do not allow project-specific configuration files
+set noexrc
 
 
 " }}}
-" VIM user interface {{{
+" UI {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Different cursors for different modes. Tmux-compatible
@@ -46,12 +56,20 @@ else
   let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
 endif
 
-" Highlight current line
-set cursorline
+" Current line already highlighted by terminal (at least iTerm)
+set nocursorline
 
-" Set terminal title
+" Title (terminal, window, tab)
 set title
 set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
+set guitablabel=%N\ %f " Be able to change the tab name
+
+" Some extra height of the command bar, for convenience
+set cmdheight=2
+
+" Split direction for windows:
+set splitbelow
+set splitright
 
 " Show line numbers
 set number
@@ -61,38 +79,34 @@ set relativenumber
 set foldenable
 set foldmethod=indent
 set foldlevelstart=5
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR> " Use Space to toggle
+vnoremap <Space> zf " Use space to create fold marker
 
 " Scrolling
-" set smoothscroll    " Scroll works with screen lines (wrapped lines ok)
+set smoothscroll    " Scroll works with screen lines (wrapped lines ok)
 set scrolloff=0     " How many lines to always keep visible above/below cursor
 set sidescrolloff=0 " Same as above, for side scrolling
 set scrolljump=5    " How many lines to scroll when going out of screen
 set sidescroll=5    " Same as above, for side scrolling
 
-" Turn on the 'wild' menu
+" Wildmenu (e.g. vim command autocomplete)
 set wildmenu
-
-" Ignore ignorable files TODO: Look into vim-wildignore plugin
+set wildchar=<Tab>      " The default
+set wildmode=full       " I don't see the other modes as useful
+set wildoptions=pum     " Vertical menu instead of above-line
+set wildoptions+=fuzzy  " Enable fuzzy search for non-file/buffer names
+set wildignorecase
 set wildignore=*/.DS_Store,*/._*                            " macOS
-set wildignore+=*~,*.swp,*.bak,*.tmp                        " Backups
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*                   " Versioning systems
 set wildignore+=*/node_modules/*                            " Big vendor dirs
-set wildignore+=*.png,*.PNG,*.jpg,*.jpeg,*.JPG,*.JPEG,*.pdf " Not-text
+set wildignore+=*.png,*.jpg,*.jpeg,*.webp,*.pdf             " Non-text; no point in using vim here
 set wildignore+=*.ttf,*.otf,*.woff,*.woff2,*.eot            " Fonts
 set wildignore+=*.class,*.0,*.pyc,*.hi,*.o                  " Compiled code
-set wildignore+=*.stack-work                                " Build directories
-set wildignore+=*/__pycache__/*                             " Cache directories
-
-" Be able to change the tab name
-set guitablabel=%N\ %f
-
-" Some extra height of the command bar, for convenience
-set cmdheight=2
-
-" Show matching brackets when text indicator is over them
-set showmatch
+set wildignore+=*.stack-work,*/__pycache__/*                " Compiled code directories
+" I keep *.{swp,bak,tmp} because I already have them in different folder
 
 " No annoying sound on errors
+set confirm               " Enable dialogs instead
 set noerrorbells
 set novisualbell
 set t_vb=
@@ -104,66 +118,41 @@ if has("gui_macvim")
   augroup END
 endif
 
+" Show matching brackets when text indicator is over them
+set showmatch
+
+" Visual block mode not constrained by line size
+set virtualedit=block
+
+" Fix backspace
+set backspace=eol,start,indent
+
+" Re-read external changes
+set autoread
+augroup MoreVimBehavior_ReRead
+  autocmd!
+  autocmd FocusGained,BufEnter * :silent! !
+
+" Return to last edit position when opening files
+augroup MoreVimBehavior_SaveFilePosition
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+augroup END
 
 
 " }}}
 " Colors and Fonts {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Enable syntax highlighting
-syntax on
-
-" Enable true colors
-if (has("termguicolors"))
-  set termguicolors
-  " Workaround for tmux
-  set t_8f=[38;2;%lu;%lu;%lum
-  set t_8b=[48;2;%lu;%lu;%lum
+let s:colors_config_path = '~/.vim/colors.config.vim'
+if empty(glob(s:colors_config_path))
+  echoerr "Colors config not found"
+else
+  execute 'source' . expand(s:colors_config_path)
 endif
 
-" Colorscheme / theme
-set background=dark
-
-const g:preferred_colorschemes_dark = [
-      \ 'one',
-      \ 'base16-default-dark',
-      \ 'base16-ashes',
-      \ 'base16-atelier-dune',
-      \ 'base16-atelier-forest',
-      \ 'base16-ayu-mirage',
-      \ 'base16-google-dark',
-      \ 'base16-selenized-black',
-      \ 'base16-seti' ]
-const g:preferred_colorschemes_dark_size = len(preferred_colorschemes_dark)
-let current_colorscheme_i = 4 " Default colorscheme
-
-" Idempotently set a given colorscheme from the list
-function SetColorscheme(i, silence = 0)
-  let $current_colorscheme = g:preferred_colorschemes_dark[a:i % g:preferred_colorschemes_dark_size]
-  colorscheme $current_colorscheme
-  if !a:silence
-    echowindow "Current colorscheme: " . $current_colorscheme
-  endif
-endfunction
-
-" Rotate over the list of colorschemes
-function RotateColorscheme(step = 1)
-  let step = a:step
-  if a:step < 0
-    let step += g:preferred_colorschemes_dark_size
-  endif
-  let g:current_colorscheme_i = (g:current_colorscheme_i + step) % g:preferred_colorschemes_dark_size
-  call SetColorscheme(g:current_colorscheme_i)
-endfunction
-
-call SetColorscheme(current_colorscheme_i, 1)
-
-
-let g:terminal_ansi_colors = [
-      \ '#1E2127', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#ABB2BF',
-      \ '#5C6370', '#E06C75', '#98C379', '#D19A66', '#61AFEF', '#C678DD', '#56B6C2', '#FFFFFF' ]
-
-set encoding=utf8
+" Enable syntax highlighting
+syntax on
 
 " Use italized comments *-*
 set t_ZH=[3m
@@ -171,9 +160,6 @@ set t_ZR=[23m
 " highlight Comment        cterm=italic
 " highlight vimComment     cterm=italic
 " highlight vimLineComment cterm=italic
-
-" Use Unix as the standard file type
-set ffs=unix,dos,mac
 
 " Change font on GUI version
 if has("gui_running")
@@ -196,18 +182,35 @@ endif
 " Text, tab and indent related {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-set formatoptions+=j  " Delete comments on line merges
-set expandtab         " Use spaces instead of tabs
+" Wrap
+set textwidth=0         " No hard wrap
+set nowrap              " No soft wrap by default
+set linebreak           " Be smart about where to wrap lines
+set display+=lastline   " Display part of those wrapped. Avoid jumps
+set whichwrap+=<,>,h,l  " Cursor wrapping
+
+" Indentation
 set smarttab
+set expandtab         " Use spaces instead of tabs
 set shiftwidth=2      " I like short tabs
 set tabstop=2
-set textwidth=0       " No hard wrap
-set nowrap            " No soft wrap by default
 set breakindent
-set linebreak         " Be smart about where to wrap lines
-set display+=lastline " Display part of those wrapped. Avoid jumps
 set autoindent        " Same indent on newline
 set smartindent       " Insert or remove indentation automatically
+vnoremap < <gv " Keep paragraph selected
+vnoremap > >gv " Keep paragraph selected
+
+" Format options
+set formatoptions-=t  " No auto-wrap code
+set formatoptions-=c  " No auto-wrap comments
+set formatoptions+=n  " Number list items
+set formatoptions+=r  " Add comment leader on enter
+set formatoptions+=o  " Add comment leader on o/O
+set formatoptions+=/  " Add comment leader on o/O BUT NOT after partially commented lines
+set formatoptions+=j  " Remove comments on line merges
+
+" Toggle paste mode (See also :help pastetoggle)
+map <leader>pp :setlocal paste!<cr>
 
 " Prettier characters on utf8
 if has('multi_byte') && &encoding ==# 'utf-8'
@@ -219,36 +222,27 @@ endif
 
 
 " }}}
-" Mappings {{{
+" Search {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set ignorecase smartcase hlsearch incsearch
 
-" De-highlights search results
-map <silent> <leader><cr> :noh<cr>
+" Sane n/N behavior (Navigate to next/prev search result){{{}}}
+nnoremap <expr> n  'Nn'[v:searchforward]
+nnoremap <expr> N  'nN'[v:searchforward]
+
+" Ack.vim (Use the_silver_searcher)
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 " Global replace matches to last search
 nmap <expr> M ':%s/' . @/ . '//g<LEFT><LEFT>'
 
-" Quickly edit a macro
-nnoremap <leader>m  :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>
-
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" :W sudo saves the file (useful for handling the permission-denied error)
-command! W w !sudo tee % > /dev/null
-
-" Open NERDTree
-map <leader>n :NERDTreeToggle<CR>
+" De-highlights search results
+map <silent> <leader><cr> :noh<cr>
 
 " Saner <c-l> (clean screen)
 nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
-
-" Global search
-nmap S :%s//g<LEFT><LEFT>
-
-" Use space to fold/unfold
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
 
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSearch('', '')<CR>/<C-R>=@/<CR><CR>
@@ -270,132 +264,16 @@ function! VisualSearch(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-" Visual block mode not constrained by line size
-set virtualedit=block
 
-" Movement
-" Move by visual line
-noremap <silent> k gk
-noremap <silent> j gj
-
-" Move visually between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-" Move only via hjkl
-map <up>    <nop>
-map <down>  <nop>
-map <left>  <nop>
-map <right> <nop>
-
-" Navigate
-" Move lines around
-nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
-nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
-
-" Mappings to navigate buffers
-" \b \f \g : go back/forward/last-used
-nnoremap <Leader>b :bp<CR>
-nnoremap <Leader>f :bn<CR>
-nnoremap <Leader>p :e#<CR>
-
-" Toggle behavior modes
-" Toggle paste mode (See also :help pastetoggle)
-map <leader>pp :setlocal paste!<cr>
-
-" Toggle spell checking
-map <leader>ss :setlocal spell!<cr>
-
-" Toggle linters
-map <leader>aa :ALEToggle<cr>
-
-" Know the current syntax group
-nmap <leader>sp :call <SID>SynStack()<CR>
-function! <SID>SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
-
-
-
-"}}}
-" Behavior {{{
+" }}}
+" Other macros {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Enable mouse, without middle-click = paste
-set mouse=a
-imap <MiddleMouse> <Nop>
-imap <2-MiddleMouse> <Nop>
-imap <3-MiddleMouse> <Nop>
-imap <4-MiddleMouse> <Nop>
-map <MiddleMouse> <Nop>
-map <2-MiddleMouse> <Nop>
-map <3-MiddleMouse> <Nop>
-map <5-MiddleMouse> <Nop>
+" Switch CWD to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Select paragraphs when indented
-" Technically a mapping, though
-vnoremap < <gv
-vnoremap > >gv
-
-" Sane n/N behavior (Navigate to next/prev search result)
-nnoremap <expr> n  'Nn'[v:searchforward]
-nnoremap <expr> N  'nN'[v:searchforward]
-
-" Quickly navigate linting errors
-nnoremap ]a :ALENextWrap<cr>
-nnoremap [a :ALEPreviousWrap<cr>
-
-" Searching
-set ignorecase smartcase hlsearch incsearch
-
-" Split direction for windows:
-set splitbelow
-set splitright
-
-" Temporary files go under .vim/files
-if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
-  call mkdir($HOME.'/.vim/files')
-endif
-" Backup files
-set backup
-set backupdir   =$HOME/.vim/files/backup//
-set backupext   =-vimbackup
-set backupskip  =
-" Swap files
-set swapfile
-set directory   =$HOME/.vim/files/swap//
-set updatecount =50 " Rotates swaps after this number of characters
-" Undo files
-set undolevels=5000
-set undofile
-set undodir     =$HOME/.vim/files/undo//
-" Viminfo files
-set viminfo     ='100,r/tmp,r/media,r/mnt,r/Volumes,n$HOME/.vim/files/info/viminfo
-" Verbose file (:help verbose)
-set verbosefile =$HOME/.vim/files/verbose.log
-
-augroup Behavior
-  autocmd!
-  " Re-read external changes
-  autocmd FocusGained,BufEnter * :silent! !
-  " Return to last edit position when opening files
-  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-  " Reload vimrc on every save
-  autocmd BufWritePost $MYVIMRC source $MYVIMRC
-augroup END
-
-" Spell checking
-set spelllang=en,es,fr,programming " From vim-dirtytalk
-set spelloptions=camel
-
-" Fix backspace and enable cursor wrapping
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
+" :W sudo saves the file (useful for handling the permission-denied error)
+command! W w !sudo tee % > /dev/null
 
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
@@ -418,50 +296,94 @@ function! <SID>BufcloseCloseIt()
    endif
 endfunction
 
-" Open NERDtree if opening a folder
-augroup Behavior
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-augroup END
-
-
 
 " }}}
-" Language specifics {{{
+" Movement {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-augroup languages
-  autocmd!
-  " C, C++: Mark code and header file automatically
-  autocmd BufLeave *.{c,cpp} mark C
-  autocmd BufLeave *.{h,hpp} mark H
-  " Haskell Alex/Happy: syntax
-  autocmd BufEnter *.x,*.y setlocal filetype=haskell
-  autocmd BufEnter *.xmobarrc setlocal filetype=haskell
-  " Javascript Flow: syntax
-  autocmd BufEnter *.js.flow setlocal filetype=javascript
-  " Ledger files
-  autocmd BufEnter *.ldg,*.ledger setlocal filetype=ledger | comp ledger
-  " Makefile
-  autocmd Filetype Makefile setlocal noexpandtab
-  " Pandoc: syntax for markdown
-  autocmd BufEnter *.md setlocal filetype=pandoc
-  " ZSH: syntax
-  autocmd BufEnter *.zsh-theme setlocal filetype=zsh
-augroup END
+" Move by visual line
+noremap <silent> k gk
+noremap <silent> j gj
+
+" Move visually between windows
+noremap <C-j> <C-W>j
+noremap <C-k> <C-W>k
+noremap <C-h> <C-W>h
+noremap <C-l> <C-W>l
+
+" Move only via hjkl
+noremap <up>    <nop>
+noremap <down>  <nop>
+noremap <left>  <nop>
+noremap <right> <nop>
+
+" Move lines around
+nnoremap [e  :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap ]e  :<c-u>execute 'move +'. v:count1<cr>
+
+" \b \f \g : Move (buffers) back/forward/last-used
+nnoremap <Leader>b :bp<CR>
+nnoremap <Leader>f :bn<CR>
+nnoremap <Leader>p :e#<CR>
+
+" Quickly navigate linting errors
+nnoremap ]a :ALENextWrap<cr>
+nnoremap [a :ALEPreviousWrap<cr>
 
 
 
-" }}}
-" Plugin settings {{{{{{
+
+"}}}
+" Mouse {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Ack.vim (Use the_silver_searcher)
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
+" Enable mouse, without middle-click = paste
+set mouse=a
+imap <MiddleMouse> <Nop>
+imap <2-MiddleMouse> <Nop>
+imap <3-MiddleMouse> <Nop>
+imap <4-MiddleMouse> <Nop>
+map <MiddleMouse> <Nop>
+map <2-MiddleMouse> <Nop>
+map <3-MiddleMouse> <Nop>
+map <5-MiddleMouse> <Nop>
+
+
+"}}}
+" Temporary files {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Temporary files go under .vim/files
+if !isdirectory($HOME.'/.vim/files') && exists('*mkdir')
+  call mkdir($HOME.'/.vim/files')
 endif
 
-" Airline
+" Backup files
+set backup
+set backupdir   =$HOME/.vim/files/backup//
+set backupext   =-vimbackup
+set backupskip  =
+
+" Swap files
+set swapfile
+set directory   =$HOME/.vim/files/swap//
+set updatecount =50 " Rotates swaps after this number of characters
+
+" Undo files
+set undolevels=5000
+set undofile
+set undodir     =$HOME/.vim/files/undo//
+
+" Viminfo file
+set viminfo     ='100,r/tmp,r/media,r/mnt,r/Volumes,n$HOME/.vim/files/info/viminfo
+
+" Verbose file (:help verbose)
+set verbosefile =$HOME/.vim/files/verbose.log
+
+
+"}}}
+" Airline {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set laststatus=2 " Always show the status line
 let g:airline_exclude_preview = 0     " Don't manage previews' statuslines
 let g:airline_inactive_collapse=1     " Collapse left widgets in inactive windows
@@ -514,12 +436,85 @@ function! AirlineInit()
   let g:airline_section_z = airline#section#create(['%3p%% ',
               \ g:airline_symbols.linenr .' ', 'linenr', ':%c'])
 endfunction
-autocmd VimEnter * call AirlineInit()
+augroup AirlineInit
+  autocmd VimEnter * call AirlineInit()
+augroup END
+
+" Bufferline
+let g:bufferline_echo = 0        " It's already on airline
+let g:bufferline_rotate = 1      " Fixed current buffer position
+let g:bufferline_fixed_index = 0 " Always first
+set hidden                       " Allows to keep several non-saved buffers
 
 " Other settings
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
 
-" ALE (Linters and Fixers)
+
+" }}}
+" Languages/Filetypes {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Spell checking
+set spelllang=en,es,fr,programming " From vim-dirtytalk
+set spelloptions=camel
+map <leader>ss :setlocal spell!<cr>
+
+augroup MoreFiletypes
+  autocmd!
+  " C, C++: Mark code and header file automatically
+  autocmd BufLeave *.{c,cpp} mark C
+  autocmd BufLeave *.{h,hpp} mark H
+  " Makefile
+  autocmd Filetype Makefile         setlocal noexpandtab
+  " Haskell Alex/Happy: syntax
+  autocmd BufEnter *.x,*.y          setlocal filetype=haskell
+  autocmd BufEnter *.xmobarrc       setlocal filetype=haskell
+  " Markdown
+  autocmd Filetype *.md,*.markdown  setlocal filetype=pandoc " TODO: Should be handled by vim-pandoc
+  " ZSH: syntax
+  autocmd BufEnter *.zsh-theme      setlocal filetype=zsh
+  autocmd BufEnter *.zshrc          setlocal filetype=zsh
+augroup END
+
+" Know the current syntax group
+nmap <leader>sp :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+
+" Pandoc
+let g:pandoc#syntax#conceal#use=1
+
+" Postgres / SQL
+let g:sql_type_default = 'pgsql'
+
+" VimTex
+let g:tex_flavor = 'latex'
+
+augroup MoreLanguageBehavior
+  autocmd!
+  " C, C++: Mark code and header file automatically
+  autocmd BufLeave *.{c,cpp} mark C
+  autocmd BufLeave *.{h,hpp} mark H
+  " Makefile
+  autocmd Filetype Makefile         setlocal noexpandtab
+  " Emoji completion for markdown and git
+  autocmd FileType pandoc,markdown,git,gitcommit,gitconfig,gitrebase,gitsendemail set omnifunc=emoji#complete
+  " Reload vimrc on every save (this does not include other config files)
+  autocmd BufWritePost ~/.vim/vimrc source <afile>
+augroup END
+
+
+" }}}
+" ALE Linters and Fixers {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Toggle linters
+map <leader>aa :ALEToggle<cr>
+
 let g:airline#extensions#ale#enabled=1
 let g:ale_sign_column_always = 1
 
@@ -530,41 +525,64 @@ let g:ale_lint_on_filetype_changed = 1
 
 let g:ale_fix_on_save = 1
 
-" Do not lint or fix minified files.
 let g:ale_pattern_options = {
 \ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
 \ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
-\}
+\} " Do not lint or fix minified files.
 let g:ale_fixers={
 \   'java':       ['remove_trailing_lines', 'trim_whitespace'],
-\   'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-\   'json':       ['jq'],
+\   'javascript': ['eslint'],
+\   'json':       ['eslint'],
+\   'jsonc':      ['eslint'],
 \   'haskell':    ['remove_trailing_lines', 'trim_whitespace', 'hlint', 'ormolu'],
-\   'typescript': ['prettier'],
+\   'typescript': ['eslint'],
 \   '*':          ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
 \   'java':       ['checkstyle'],
-\   'javascript': ['eslint', 'flow'],
+\   'javascript': ['eslint'],
 \   'haskell':    ['hlint', 'hls'],
 \   'typescript': ['eslint', 'tsserver'],
+\   'json': ['eslint'],
+\   'jsonc': ['eslint'],
 \}
+" TODO:
+" awk: gawk
+" bash: shellcheck
+" bibtex: bibclean
+" c: gcc
+" cpp: gcc
+" cloudformation: cfn-python-lint
+" css: stylelint
+" dhall
+" dockerfile
+" fortran
+" gitlint
+" graphql: gqlint
+" html: alex, htmlhint
+" java: eclipselsp?
+" latex
+" lua
+" make
+" markdown: pandoc
+" sql: pgformatter, ...?
+" toml
+" texinfo
+" terraform
+" systemd
+" vim
+" xml
 let g:ale_linter_aliases = {
 \   'pandoc': 'markdown',
 \}
-let g:ale_sign_error = '❌'   " Can use emoji
-let g:ale_sign_warning = '⚠️ ' " Can use emoji
+let g:ale_sign_error = '❌'   " Tip: Can use emoji
+let g:ale_sign_warning = '⚠️ ' " Tip: Can use emoji
 let g:ale_statusline_format = ['X %d', '? %d', '']
 " %linter% is the name of the linter that provided the message
 " %s is the error or warning message
 let g:ale_echo_msg_format = '%linter%% [code]%: %s'
 " ALE lang-specifics
 let g:ale_javascript_prettier_use_local_config = 1
-
-" Bufferline
-let g:bufferline_echo = 0        " It's already on airline
-let g:bufferline_rotate = 1      " Fixed current buffer position
-let g:bufferline_fixed_index = 0 " Always first
 
 " Devicons
 if $OS == 'macos'
@@ -573,196 +591,43 @@ else
   let g:WebDevIconsOS = 'Linux'
 endif
 
-" Emoji
-augroup languages
-  " For markdown and git
-  autocmd FileType pandoc,markdown,git,gitcommit,gitconfig,gitrebase,gitsendemail set omnifunc=emoji#complete
-augroup END
+
+" }}}
+" Other plugins {{{
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " NERDTree
-let NERDTreeAutoDeleteBuffer = 1 " Delete file buffer of file deleted via NERDTree
-let NERDTreeChDirMode = 2        " Change the CWD with the tree root
-let NERDTreeMouseMode = 2        " Single click on directory to open
-let NERDTreeRespectWildIgnore = 1
-let NERDTreeIgnore = ['\.hi$', '\.o$']
-let g:NERDTreeCascadeSingleChildDir = 0
-let g:NERDTreeCascadeOpenSingleChildDir = 0
-let g:NERDTreeCaseSensitiveSort = 1
-let g:NERDTreeMinimalUI = 1
-let g:NERDTreeNaturalSort = 1
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeSortOrder = ['\/$'] " Directories first
-
-let g:NERDTreeGitIndicatorMapCustom = {
-    \ "Modified"  : "✹",
-    \ "Staged"    : "✚",
-    \ "Untracked" : "✭",
-    \ "Renamed"   : "➜",
-    \ "Unmerged"  : "═",
-    \ "Deleted"   : "✖",
-    \ "Dirty"     : "✗",
-    \ "Clean"     : "✔︎",
-    \ 'Ignored'   : '☒',
-    \ "Unknown"   : "?"
-    \ }
-
-augroup NerdtreeDevicons
-  let g:colors = {
-        \ 'brown':       ["#905532", "Brown"],
-        \ 'aqua':        ["#3AFFDB", "Cyan"],
-        \ 'blue':        ["#689FB6", "Blue"],
-        \ 'darkBlue':    ["#44788E", "DarkBlue"],
-        \ 'purple':      ["#834F79", "DarkMagenta"],
-        \ 'lightPurple': ["#834F79", "Magenta"],
-        \ 'juliaPurple': ["#9558B2", "Magenta"],
-        \ 'red':         ["#AE403F", "DarkRed"],
-        \ 'beige':       ["#F5C06F", "Brown"],
-        \ 'yellow':      ["#F09F17", "Yellow"],
-        \ 'orange':      ["#D4843E", "Brown"],
-        \ 'darkOrange':  ["#F16529", "Brown"],
-        \ 'pink':        ["#CB6F6F", "Red"],
-        \ 'salmon':      ["#EE6E73", "Red"],
-        \ 'green':       ["#8FAA54", "DarkGreen"],
-        \ 'lightGreen':  ["#31B53E", "Green"],
-        \ 'white':       ["#FFFFFF", "White"]
-        \ }
-  " {{{ Color for each icon
-  let g:icon_colors = {
-        \ 'λ' :  g:colors['yellow'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['pink'],
-        \ '' :  g:colors['yellow'],
-        \ '' :  g:colors['purple'],
-        \ '' :  g:colors['purple'],
-        \ '' :  g:colors['yellow'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['beige'],
-        \ '' :  g:colors['beige'],
-        \ '' :  g:colors['aqua'],
-        \ '' :  g:colors['darkOrange'],
-        \ '' :  g:colors['orange'],
-        \ '' :  g:colors['pink'],
-        \ '' :  g:colors['yellow'],
-        \ '' :  g:colors['darkBlue'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['darkOrange'],
-        \ '' :  g:colors['brown'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['purple'],
-        \ '' :  g:colors['purple'],
-        \ '' :  g:colors['yellow'],
-        \ '' :  g:colors['juliaPurple'],
-        \ '' :  g:colors['beige'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['purple'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['red'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['darkOrange'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['darkBlue'],
-        \ '' :  g:colors['red'],
-        \ '' :  g:colors['orange'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['green'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['red'],
-        \ '' :  g:colors['lightPurple'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['darkOrange'],
-        \ '' :  g:colors['red'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['lightPurple'],
-        \ '' :  g:colors['darkOrange'],
-        \ '' :  g:colors['salmon'],
-        \ '' :  g:colors['darkBlue'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['orange'],
-        \ '' :  g:colors['blue'],
-        \ '' :  g:colors['aqua'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['white'],
-        \ '' :  g:colors['blue'],
-        \ '󰚩' :  g:colors['white'],
-        \ '󰓆' :  g:colors['white'],
-        \ '' :  g:colors['orange'],
-        \ '󰊄' :  g:colors['white'],
-        \ '󱂅' :  g:colors['white'],
-        \ '󱁉' :  g:colors['orange'],
-        \ '' :  g:colors['darkOrange']
-        \ }
-  " }}}
-  " {{{ Icons for extensions
-  let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {
-        \ 'log':   '󱂅',
-        \ 'puml':  '󱁉',
-        \ 'txt':   '󰊄',
-        \ 'spl':   '󰓆',
-        \ 'sug':   '󰓆',
-        \ 'r':     '',
-        \ 'rproj': '',
-        \ 'j2':    '',
-        \ 'cfg':   '',
-        \ 'tex':   '' }
-  " }}}
-  " {{{ Icons for exact filenames
-  let g:WebDevIconsUnicodeDecorateFileNodesExactSymbols = {
-        \ 'Config':          '',
-        \ 'packageInfo':     '',
-        \ '.git':            '',
-        \ '.gitmodules':     '',
-        \ '.gitignore':      '',
-        \ '.prettierignore': '',
-        \ '.eslintignore':   '',
-        \ '.taskrc':         '',
-        \ '.zpreztorc':      '',
-        \ '.psqlrc':         '',
-        \ '.muttrc':         '',
-        \ 'robots.txt':      '󰚩' }
-  " }}}
-  let s:icon_n=0
-  for icon in keys(g:icon_colors)
-    exec 'autocmd filetype nerdtree syntax match icon_'.s:icon_n.' /'.icon.'/ containedin=NERDTreeFlags'
-    exec 'autocmd filetype nerdtree highlight icon_'.s:icon_n.' ctermbg=none ctermfg='.g:icon_colors[icon][1].' guifg='.g:icon_colors[icon][0]
-    let s:icon_n += 1
-  endfor
-augroup END
-
-
-" Pandoc
-let g:pandoc#syntax#conceal#use=1
-
-" Postgres / SQL
-let g:sql_type_default = 'pgsql'
+map <leader>n :NERDTreeToggle<CR>
+let s:nerdtree_config_path = '~/.vim/nerdtree.config.vim'
+if empty(glob(s:nerdtree_config_path))
+  echoerr "NERDTree config not found"
+else
+  execute 'source' . expand(s:nerdtree_config_path)
+endif
 
 " Tmux Navigator
 "" Write all buffers before navigating from Vim to tmux pane
 let g:tmux_navigator_save_on_switch = 2
 
-" VimTex
-let g:tex_flavor = 'latex'
+
+" }}}
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
+" Private External Scripts (to run AFTER everything)
+for f in split(glob('~/.vim/private/*.after.vim'), '\n')
+  execute 'source' f
+endfor
 
 " Build plugin help files
 " Plugins need to be added to runtimepath before helptags can be generated
 packloadall
 " Load all of the helptags now, after plugins have been loaded.
 silent! helptags ALL
-
-
-
-" }}}}}}
 
 set secure " Show mappings, disallow further autocmd, shell and writes in rc
