@@ -14,7 +14,12 @@ endfor
 
 " General {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set nocompatible          " Because we want Vim instead of Vi
+if !has('nvim')
+  set nocompatible          " Because we want Vim instead of Vi
+  set hidden                " Allows to keep several non-saved buffers
+endif
+
+set autoread              " When file changes outside of vim
 set modelines=1           " Some times I use them
 set history=5000          " REMEMBER
 
@@ -31,10 +36,12 @@ else
 endif
 
 " Small optimizations
-if hostname() =~ '.*\d\.amazon\.com'
-  set nottyfast           " Avoid batch send characters to screen on remote
+if !has('nvim')
+  if hostname() =~ '.*\d\.amazon\.com'
+    set nottyfast           " Avoid batch send characters to screen on remote
+  endif
+  set lazyredraw            " Don't redraw on macros!
 endif
-set lazyredraw            " Don't redraw on macros!
 
 " Do not allow project-specific configuration files
 set noexrc
@@ -44,16 +51,18 @@ set noexrc
 " UI {{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Different cursors for different modes. Tmux-compatible
-" See also :help mouseshape
-if empty($TMUX)
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-  let &t_SR = "\<Esc>]50;CursorShape=2\x7"
-else
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-  let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
+if !has('nvim')
+  " Different cursors for different modes. Tmux-compatible
+  " See also :help mouseshape
+  if empty($TMUX)
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+    let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+  else
+    let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+    let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+    let &t_SR = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=2\x7\<Esc>\\"
+  endif
 endif
 
 " Current line already highlighted by terminal (at least iTerm)
@@ -61,7 +70,9 @@ set nocursorline
 
 " Title (terminal, window, tab)
 set title
-set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
+if !has('nvim')
+  set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
+endif
 set guitablabel=%N\ %f " Be able to change the tab name
 
 " Some extra height of the command bar, for convenience
@@ -83,14 +94,16 @@ nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR> " Use Space to 
 vnoremap <Space> zf " Use space to create fold marker
 
 " Scrolling
-set smoothscroll    " Scroll works with screen lines (wrapped lines ok)
+if !has('nvim')
+  set smoothscroll    " Scroll works with screen lines (wrapped lines ok)
+endif
 set scrolloff=0     " How many lines to always keep visible above/below cursor
 set sidescrolloff=0 " Same as above, for side scrolling
 set scrolljump=5    " How many lines to scroll when going out of screen
 set sidescroll=5    " Same as above, for side scrolling
 
 " Wildmenu (e.g. vim command autocomplete)
-set wildmenu
+set wildmenu            " On by default in nvim
 set wildchar=<Tab>      " The default
 set wildmode=full       " I don't see the other modes as useful
 set wildoptions=pum     " Vertical menu instead of above-line
@@ -360,7 +373,9 @@ endif
 
 " Backup files
 set backup
-set backupdir   =$HOME/.vim/files/backup//
+if !has('nvim')
+  set backupdir   =$HOME/.vim/files/backup//
+endif
 set backupext   =-vimbackup
 set backupskip  =
 
@@ -372,13 +387,18 @@ set updatecount =50 " Rotates swaps after this number of characters
 " Undo files
 set undolevels=5000
 set undofile
-set undodir     =$HOME/.vim/files/undo//
+if !has('nvim')
+  set undodir=$HOME/.vim/files/undo//
+endif
 
 " Viminfo file
-set viminfo     ='100,r/tmp,r/media,r/mnt,r/Volumes,n$HOME/.vim/files/info/viminfo
+if !has('nvim')
+  set viminfo='100,r/tmp,r/media,r/mnt,r/Volumes,n$HOME/.vim/files/info/viminfo
+endif
 
 " Verbose file (:help verbose)
 set verbosefile =$HOME/.vim/files/verbose.log
+
 
 
 "}}}
@@ -444,7 +464,6 @@ augroup END
 let g:bufferline_echo = 0        " It's already on airline
 let g:bufferline_rotate = 1      " Fixed current buffer position
 let g:bufferline_fixed_index = 0 " Always first
-set hidden                       " Allows to keep several non-saved buffers
 
 " Other settings
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]' " Skip if set to utf-8[unix]
@@ -536,11 +555,13 @@ let g:ale_fixers={
 \   'jsonc':      ['eslint'],
 \   'haskell':    ['remove_trailing_lines', 'trim_whitespace', 'hlint', 'ormolu'],
 \   'typescript': ['eslint'],
+\   'sql':        ['sqlfluff'],
 \   '*':          ['remove_trailing_lines', 'trim_whitespace'],
 \}
 let g:ale_linters = {
 \   'java':       ['checkstyle'],
 \   'javascript': ['eslint'],
+\   'html':       ['htmlhint'],
 \   'haskell':    ['hlint', 'hls'],
 \   'typescript': ['eslint', 'tsserver'],
 \   'json': ['eslint'],
@@ -559,7 +580,6 @@ let g:ale_linters = {
 " fortran
 " gitlint
 " graphql: gqlint
-" html: alex, htmlhint
 " java: eclipselsp?
 " latex
 " lua
