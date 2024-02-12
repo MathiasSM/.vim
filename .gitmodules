@@ -52,9 +52,6 @@
 [submodule "pack/mathias/start/nerdtree"]
 	path = pack/ui/start/nerdtree
 	url = git@github.com:scrooloose/nerdtree
-[submodule "pack/mathias/start/vim-polyglot"]
-	path = pack/languages/start/vim-polyglot
-	url = git@github.com:sheerun/vim-polyglot
 [submodule "pack/mathias/start/gundo.vim"]
 	path = pack/ui/start/gundo.vim
 	url = git@github.com:sjl/gundo.vim
