@@ -18,7 +18,18 @@ let g:NERDTreeSortOrder = ['\/$'] " Directories first
 " Open NERDtree if opening a folder
 augroup NERDTreeBehavior
   autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+  autocmd VimEnter *
+        \ if !exists("s:std_in") && argc() == 0 |
+        \   exe 'NERDTree' getcwd() |
+        \   wincmd p |
+        \   enew |
+        \ endif
+  autocmd VimEnter *
+        \ if !exists("s:std_in") && argc() == 1 && isdirectory(argv()[0]) |
+        \   exe 'NERDTree' argv()[0] |
+        \   wincmd p |
+        \   enew |
+        \ endif
 augroup END
 
 " TODO: Check if these are working
