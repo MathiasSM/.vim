@@ -373,9 +373,7 @@ endif
 
 " Backup files
 set backup
-if !has('nvim')
-  set backupdir   =$HOME/.vim/files/backup//
-endif
+set backupdir   =$HOME/.vim/files/backup//
 set backupext   =-vimbackup
 set backupskip  =
 
